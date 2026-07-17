@@ -1,10 +1,13 @@
 extends Node3D
 
+# TODO: Jitter improvements
+
 @export var player: CharacterBody3D
-@export var max_ghosts: int = 5
+@export var max_ghosts: int = 10
 @export var fade_duration: float = 0.8   # 单个残影淡出时间（秒）
 @export var history_length: int = 100    # 历史容量（足够长）
 @export var step_between_ghosts: float = 0.05  # 每个 ghost 之间的时间间隔（秒）
+@export var visible_ghosts: int = 5   # 屏幕上实际显示的残影数量（≤ max_ghosts）
 
 var interval: float = LatencyController.latency
 var enabled: bool = true
@@ -30,7 +33,7 @@ class GhostState:
 var _history: Array[GhostState] = []
 var _ghost_pool: Array[Sprite3D] = []
 var _sample_timer: float = 0.0
-var _sample_interval: float = 0.1   # 采样间隔
+var _sample_interval: float = 0.02   # 采样间隔（50Hz）
 
 func _record_state():
 	var tex: Texture2D = null
@@ -76,17 +79,23 @@ func _physics_process(delta):
 	if not enabled or not player:
 		return
 	
+	# 确保 visible_ghosts 不超过池大小
+	var display_count = min(visible_ghosts, max_ghosts)
+	if display_count <= 0:
+		hide_all_ghosts()
+		return
+	
 	interval = LatencyController.get_latency()
 	if interval < 0.2:
 		# 延迟太小，隐藏所有 ghost
-		for ghost in _ghost_pool:
-			ghost.visible = false
+		hide_all_ghosts()
 		return
 
 	# 采样（固定间隔）
 	_sample_timer += delta
 	if _sample_timer >= _sample_interval:
 		_sample_timer = 0.0
+		#_sample_timer -= _sample_interval
 		_record_state()
 	
 	# 限制历史长度
@@ -99,10 +108,11 @@ func _physics_process(delta):
 	# 计算每个 ghost 的目标时间
 	# ghost 0（最新）：延迟 interval
 	# ghost i：延迟 interval + i * step_between_ghosts
-	var ghost_count = min(_ghost_pool.size(), _history.size())
+	var ghost_count = min(display_count, _history.size())
 	for i in range(ghost_count):
 		var target_time = now - interval - i * step_between_ghosts
-		var state = _find_closest_state(target_time)
+		#var state = _find_closest_state(target_time)
+		var state = _interpolate_state(target_time)
 		if state:
 			var ghost = _ghost_pool[i]
 			ghost.global_position = state.position
@@ -123,6 +133,10 @@ func _physics_process(delta):
 	if debug_draw_positions:
 		_update_debug_markers()
 
+func hide_all_ghosts():
+	for ghost in _ghost_pool:
+		ghost.visible = false
+
 # 在历史中查找最接近目标时间的状态（线性搜索，历史较短）
 func _find_closest_state(target_time: float) -> GhostState:
 	if _history.is_empty():
@@ -136,21 +150,71 @@ func _find_closest_state(target_time: float) -> GhostState:
 			best_state = state
 	return best_state
 
+# 插值 + 二分
+func _interpolate_state(target_time: float) -> GhostState:
+	if _history.is_empty():
+		return null
+	if _history.size() == 1:
+		return _history[0]
+	
+	# 二分查找目标时间所在的区间
+	var lo = 0
+	var hi = _history.size() - 1
+	while lo < hi:
+		var mid = (lo + hi) / 2
+		if _history[mid].timestamp < target_time:
+			lo = mid + 1
+		else:
+			hi = mid
+	
+	# 找到邻近的两个状态（lo 和 lo-1）
+	var idx0 = max(lo - 1, 0)
+	var idx1 = min(lo, _history.size() - 1)
+	var state0 = _history[idx0]
+	var state1 = _history[idx1]
+	
+	# 如果两个状态时间相同，直接返回
+	if state1.timestamp == state0.timestamp:
+		return state0
+	
+	# 计算插值权重 (0~1)
+	var t = (target_time - state0.timestamp) / (state1.timestamp - state0.timestamp)
+	t = clamp(t, 0.0, 1.0)
+	
+	# 插值位置和缩放
+	var pos = state0.position.lerp(state1.position, t)
+	var scale = state0.scale.lerp(state1.scale, t)
+	
+	# 纹理和帧不插值，取最近的那个（或取 state1，一般差别不大）
+	var tex = state1.texture if t > 0.5 else state0.texture
+	var anim = state1.animation_name if t > 0.5 else state0.animation_name
+	var frame = state1.frame if t > 0.5 else state0.frame
+	
+	# 返回插值后的状态（timestamp 设为 target_time 便于调试）
+	return GhostState.new(pos, scale, tex, anim, frame, target_time)
+
 # ---- 控制台命令 ----
 func _register_commands() -> void:
 	LimboConsole.register_command(_cmd_info, "player_latency")
 	LimboConsole.register_command(func(x: int): history_length = x, "player_latency set_length")
 	LimboConsole.register_command(func(x: float): step_between_ghosts = x, "player_latency set_step")
+	LimboConsole.register_command(
+		func(x: int): visible_ghosts = clamp(x, 0, max_ghosts),
+		"player_latency set_visible",
+        "设置可见残影数量 (0~max_ghosts)"
+	)
 
 func _cmd_info() -> void:
-	LimboConsole.info("ENABLED: %s\nINTERVAL: %s\nMAX_GHOSTS: %s\nHISTORY_LENGTH: %s\nSTEP: %s\nSAMPLE_INTERVAL: %s" % [enabled, interval, max_ghosts, history_length, step_between_ghosts, _sample_interval])
-
+	LimboConsole.info("ENABLED: %s\nINTERVAL: %s\nMAX_GHOSTS: %s\nVISIBLE_GHOSTS: %s\nHISTORY_LENGTH: %s\nSTEP: %s" % [
+		enabled, interval, max_ghosts, visible_ghosts, history_length, step_between_ghosts
+	])
+	
 # ---- DEBUG DRAWING ----
 @export var debug_draw_positions: bool = false
 @export var debug_draw_max: int = 30
 @export var debug_marker_size: float = 0.05
-@export var debug_show_index: bool = true
-@export var debug_show_time: bool = true
+@export var debug_show_index: bool = false
+@export var debug_show_time: bool = false
 
 var _debug_markers: Array[MeshInstance3D] = []
 var _debug_labels: Array[Label3D] = []

@@ -36,8 +36,13 @@ func _ready() -> void:
 func update() -> void:
 	var latency: int = LatencyController.get_latency() * 1000
 	
+	# TODO: Custom color
 	if latency < 200:
 		self_modulate = Color.CHARTREUSE
+	elif latency < 700:
+		self_modulate = Color.GOLD
+	else:
+		self_modulate = Color.RED
 	
 	text = \"%sms\" % (latency + randi_range(0,50))
 "

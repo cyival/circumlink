@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://bqk1liltv7v12"]
+
+[ext_resource type="Script" uid="uid://byryrel2pqatg" path="res://scripts/player_controller.gd" id="1_4dohe"]
+[ext_resource type="Texture2D" uid="uid://cdc3ubmci3scs" path="res://icon.svg" id="2_r66lb"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_t1mng"]
+size = Vector3(1, 1, 0.25)
+
+[node name="Player" type="CharacterBody3D" unique_id=2060740801]
+axis_lock_angular_x = true
+axis_lock_angular_y = true
+axis_lock_angular_z = true
+script = ExtResource("1_4dohe")
+jump_velocity = 7.0
+
+[node name="Sprite3D" type="Sprite3D" parent="." unique_id=2057117795]
+texture = ExtResource("2_r66lb")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=354989510]
+shape = SubResource("BoxShape3D_t1mng")

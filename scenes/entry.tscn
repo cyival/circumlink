@@ -1,0 +1,50 @@
+[gd_scene format=3 uid="uid://d3clrkqylipbr"]
+
+[ext_resource type="Shader" uid="uid://cpw8gxaom7042" path="res://shaders/crt_scr.gdshader" id="1_ycj4g"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_es41n"]
+viewport_path = NodePath("SubViewport")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_t1mng"]
+resource_local_to_scene = true
+shader = ExtResource("1_ycj4g")
+shader_parameter/tex = SubResource("ViewportTexture_es41n")
+shader_parameter/mask_type = 2
+shader_parameter/curve = 0.050000002375
+shader_parameter/color_offset = 0.0
+shader_parameter/mask_brightness = 0.0
+shader_parameter/aspect = 0.75
+
+[node name="Entry" type="Control" unique_id=51891876]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1666980014]
+material = SubResource("ShaderMaterial_t1mng")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SubViewport" type="SubViewport" parent="." unique_id=586667826]
+size = Vector2i(1024, 512)
+
+[node name="Control" type="Control" parent="SubViewport" unique_id=955420823]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="SubViewport/Control" unique_id=1494010977]
+layout_mode = 0
+offset_right = 56.0
+offset_bottom = 16.0
+text = "this is a fucking test label"

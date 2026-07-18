@@ -5,9 +5,10 @@ extends Node3D
 @export var player: CharacterBody3D
 @export var max_ghosts: int = 10
 @export var fade_duration: float = 0.8   # 单个残影淡出时间（秒）
-@export var history_length: int = 100    # 历史容量（足够长）
+@export var history_length: int = 200    # 历史容量（足够长）
 @export var step_between_ghosts: float = 0.05  # 每个 ghost 之间的时间间隔（秒）
-@export var visible_ghosts: int = 5   # 屏幕上实际显示的残影数量（≤ max_ghosts）
+@export var visible_ghosts: int = 1   # 屏幕上实际显示的残影数量（≤ max_ghosts）
+@export var sync_steps_with_latency: bool = true
 
 var interval: float = LatencyController.latency
 var enabled: bool = true
@@ -90,6 +91,9 @@ func _physics_process(delta):
 		# 延迟太小，隐藏所有 ghost
 		hide_all_ghosts()
 		return
+	
+	if sync_steps_with_latency:
+		step_between_ghosts = interval
 
 	# 采样（固定间隔）
 	_sample_timer += delta

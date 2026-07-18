@@ -226,31 +226,17 @@ func _physics_process(delta):
 	var ghost_count = min(display_count, _history.size())
 	for i in range(ghost_count):
 		var target_time = now - interval - i * step_between_ghosts
-		#var state = _find_closest_state(target_time)
-		var state = _interpolate_state(target_time)
-		if state:
-			# 获取物理体和精灵
-			var ghost_body = _ghost_pool[i]
-			var ghost_sprite = _ghost_sprites[i]
-			
-			# 更新物理体位置和缩放（缩放会影响碰撞体大小）
-			ghost_body.global_position = state.position
-			ghost_body.scale = state.scale          # 如果角色会缩放，碰撞体也跟着缩放
-			ghost_body.visible = true
-			
-			# 更新精灵纹理（由于是子节点，位置会自动继承父节点，无需额外设置）
-			if state.texture:
-				ghost_sprite.texture = state.texture
-			
-			# 控制可见性和透明度（透明度只影响精灵，不影响物理碰撞）
-			ghost_sprite.visible = true
+		# 获取物理体和精灵
+		var ghost_body = _ghost_pool[i]
+		var ghost_sprite = _ghost_sprites[i]
+		
+		var success := _apply_interpolated_state(ghost_body, ghost_sprite, target_time)
+		if success:
+			# 设置透明度（基于索引的渐变）
 			var alpha = ghost_start_alpha * (1 - float(i) / ghost_count)
 			ghost_sprite.modulate.a = clamp(alpha, 0.1, 1.0)
-
 		else:
-			# 隐藏对应的物理体和精灵
-			_ghost_pool[i].visible = false          # 物理体隐藏（同时隐藏所有子节点）
-		# 或者只隐藏精灵：_ghost_sprites[i].visible = false
+			ghost_body.visible = false
 	
 	# 隐藏多余的 ghost
 	for i in range(ghost_count, _ghost_pool.size()):
@@ -278,14 +264,16 @@ func _find_closest_state(target_time: float) -> GhostState:
 			best_state = state
 	return best_state
 
-# 插值 + 二分
-func _interpolate_state(target_time: float) -> GhostState:
+# 插值 + 二分，直接将插值结果应用到指定的 ghost_body 和 ghost_sprite
+func _apply_interpolated_state(ghost_body: StaticBody3D, ghost_sprite: Sprite3D, target_time: float) -> bool:
 	if _history.is_empty():
-		return null
+		ghost_body.visible = false
+		return false
 	if _history.size() == 1:
-		return _history[0]
-	
-	# 二分查找目标时间所在的区间
+		_apply_state_to_ghost(ghost_body, ghost_sprite, _history[0])
+		return true
+
+	# 二分查找区间
 	var lo = 0
 	var hi = _history.size() - 1
 	while lo < hi:
@@ -294,32 +282,44 @@ func _interpolate_state(target_time: float) -> GhostState:
 			lo = mid + 1
 		else:
 			hi = mid
-	
-	# 找到邻近的两个状态（lo 和 lo-1）
+
 	var idx0 = max(lo - 1, 0)
 	var idx1 = min(lo, _history.size() - 1)
 	var state0 = _history[idx0]
 	var state1 = _history[idx1]
-	
-	# 如果两个状态时间相同，直接返回
-	if state1.timestamp == state0.timestamp:
-		return state0
-	
-	# 计算插值权重 (0~1)
-	var t = (target_time - state0.timestamp) / (state1.timestamp - state0.timestamp)
-	t = clamp(t, 0.0, 1.0)
-	
+
+	# 计算插值权重
+	var t := 0.0
+	var time_diff = state1.timestamp - state0.timestamp
+	if time_diff > 0.0:
+		t = clamp((target_time - state0.timestamp) / time_diff, 0.0, 1.0)
+
 	# 插值位置和缩放
 	var pos = state0.position.lerp(state1.position, t)
 	var scale = state0.scale.lerp(state1.scale, t)
-	
-	# 纹理和帧不插值，取最近的那个（或取 state1，一般差别不大）
-	var tex = state1.texture if t > 0.5 else state0.texture
-	var anim = state1.animation_name if t > 0.5 else state0.animation_name
-	var frame = state1.frame if t > 0.5 else state0.frame
-	
-	# 返回插值后的状态（timestamp 设为 target_time 便于调试）
-	return GhostState.new(pos, scale, tex, anim, frame, target_time)
+
+	# 纹理和帧取权重较大侧的状态（不插值）
+	var tex: Texture2D = state1.texture if t > 0.5 else state0.texture
+	var anim_name: String = state1.animation_name if t > 0.5 else state0.animation_name
+	var frame: int = state1.frame if t > 0.5 else state0.frame
+
+	# 直接应用到节点
+	ghost_body.global_position = pos
+	ghost_body.scale = scale
+	if tex:
+		ghost_sprite.texture = tex
+	ghost_body.visible = true
+	ghost_sprite.visible = true
+
+	return true
+
+func _apply_state_to_ghost(ghost_body: StaticBody3D, ghost_sprite: Sprite3D, state: GhostState):
+	ghost_body.global_position = state.position
+	ghost_body.scale = state.scale
+	if state.texture:
+		ghost_sprite.texture = state.texture
+	ghost_body.visible = true
+	ghost_sprite.visible = true
 
 func create_fixed_ghost():
 	# 检查是否有可用的动态残影（索引0必须存在且可见）

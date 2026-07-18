@@ -7,6 +7,7 @@
 size = Vector3(1, 1, 0.25)
 
 [node name="Player" type="CharacterBody3D" unique_id=2060740801]
+axis_lock_linear_z = true
 axis_lock_angular_x = true
 axis_lock_angular_y = true
 axis_lock_angular_z = true

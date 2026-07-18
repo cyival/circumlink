@@ -2,6 +2,8 @@ extends Node3D
 
 # TODO: Jitter improvements
 
+# Godot does not currently support scaling of physics bodies or collision shapes. As a workaround, change the collision shape's extents instead of changing its scale. If you want the visual representation's scale to change as well, change the scale of the underlying visual representation (Sprite2D, MeshInstance3D, …) and change the collision shape's extents separately. Make sure the collision shape is not a child of the visual representation in this case.
+
 @export var player: CharacterBody3D
 @export var max_ghosts: int = 10
 @export var fade_duration: float = 0.8   # 单个残影淡出时间（秒）
@@ -9,6 +11,9 @@ extends Node3D
 @export var step_between_ghosts: float = 0.05  # 每个 ghost 之间的时间间隔（秒）
 @export var visible_ghosts: int = 1   # 屏幕上实际显示的残影数量（≤ max_ghosts）
 @export var sync_steps_with_latency: bool = true
+@export var fixed_ghost_lifetime: float = 3.0   # 固定残影存在时间（秒）
+@export var max_fixed_ghosts: int = 10          # 最大同时存在的固定残影数量
+@export var ghost_start_alpha: float = 0.7
 
 var interval: float = LatencyController.latency
 var enabled: bool = true
@@ -32,9 +37,17 @@ class GhostState:
 
 # -- 内部变量 --
 var _history: Array[GhostState] = []
-var _ghost_pool: Array[Sprite3D] = []
+var _ghost_pool: Array[StaticBody3D] = []
+var _ghost_sprites: Array[Sprite3D] = []
+var _fixed_ghost_pool: Array[StaticBody3D] = []  # 存储固定残影的物理体
+var _fixed_ghost_sprites: Array[Sprite3D] = []   # 对应的精灵
+var _fixed_ghost_timers: Array[Timer] = []       # 每个固定残影的倒计时
 var _sample_timer: float = 0.0
 var _sample_interval: float = 0.02   # 采样间隔（50Hz）
+# 存储每个固定残影的碰撞形状节点引用
+var _fixed_ghost_collision_shapes: Array[CollisionShape3D] = []
+# 标记哪些固定残影正在等待“玩家离开后启用碰撞”
+var _fixed_ghost_pending_enable: Array[bool] = []
 
 func _record_state():
 	var tex: Texture2D = null
@@ -62,18 +75,116 @@ func _record_state():
 
 func _ready():
 	_setup_ghost_pool()
+	_setup_fixed_ghost_pool()
 	_register_commands()
 	if debug_draw_positions:
 		_setup_debug_markers()
 		_setup_debug_labels()
 
 func _setup_ghost_pool():
+	var player_shape = _get_player_collision_shape()
+	if not player_shape:
+		printerr("未找到玩家的 CollisionShape3D，残影将无法产生碰撞！")
+		
 	for i in range(max_ghosts):
-		var ghost = Sprite3D.new()
-		ghost.centered = true
-		ghost.visible = false
-		add_child(ghost)
-		_ghost_pool.append(ghost)
+		var ghost_body = StaticBody3D.new()
+		ghost_body.collision_layer = 0          # 设置在物理层1（需与玩家的mask匹配）
+		ghost_body.collision_mask = 0           # 残影不需要主动检测别人，只负责被撞
+		
+		var shape_node = CollisionShape3D.new()
+		if player_shape:
+			shape_node.shape = player_shape.duplicate()  # 必须复制，避免共享同一资源
+		ghost_body.add_child(shape_node)
+		
+		var sprite = Sprite3D.new()
+		sprite.centered = true
+		sprite.visible = false
+		sprite.render_priority = -1                      # 避免渲染与玩家 Sprite 冲突
+		ghost_body.add_child(sprite)
+		
+		add_child(ghost_body)
+		_ghost_pool.append(ghost_body)
+		_ghost_sprites.append(sprite)
+
+func _setup_fixed_ghost_pool():
+	var player_shape = _get_player_collision_shape()
+	for i in range(max_fixed_ghosts):
+		var ghost_body = StaticBody3D.new()
+		ghost_body.collision_layer = 0
+		ghost_body.collision_mask = 0
+		
+		var shape_node = CollisionShape3D.new()
+		if player_shape:
+			shape_node.shape = player_shape.duplicate()
+		# 默认禁用
+		shape_node.disabled = true
+		ghost_body.add_child(shape_node)
+		
+		var sprite = Sprite3D.new()
+		sprite.centered = true
+		sprite.visible = false
+		ghost_body.add_child(sprite)
+		
+		add_child(ghost_body)
+		
+		# 创建对应的 Timer（作为子节点）
+		var timer = Timer.new()
+		timer.one_shot = true
+		timer.timeout.connect(_on_fixed_ghost_timeout.bind(ghost_body, sprite, timer))
+		ghost_body.add_child(timer)  # 将 timer 作为残影子节点，方便管理
+		
+		_fixed_ghost_pool.append(ghost_body)
+		_fixed_ghost_sprites.append(sprite)
+		_fixed_ghost_timers.append(timer)
+		
+		# 保存碰撞形状引用
+		_fixed_ghost_collision_shapes.append(shape_node)
+		_fixed_ghost_pending_enable.append(false)
+		
+		ghost_body.visible = false
+
+func _is_fixed_ghost_overlapping_player(index: int) -> bool:
+	var body = _fixed_ghost_pool[index]
+	var shape_node = _fixed_ghost_collision_shapes[index]
+	if not shape_node or not shape_node.shape:
+		return false
+
+	var space_state = get_world_3d().direct_space_state
+	var query = PhysicsShapeQueryParameters3D.new()
+	query.shape = shape_node.shape
+	query.transform = body.global_transform      # 形状跟随物理体
+	query.collide_with_bodies = true
+	query.collide_with_areas = false
+	query.collision_mask = 1                     # 玩家所在的层
+	query.exclude = [body.get_rid()]             # 排除自身
+
+	var results = space_state.intersect_shape(query)
+	for result in results:
+		if result.collider == player:
+			return true
+	return false
+
+func _get_player_collision_shape() -> Shape3D:
+	if not player:
+		return null
+	# 遍历玩家子节点，找到第一个 CollisionShape3D
+	for child in player.get_children():
+		if child is CollisionShape3D:
+			return child.shape
+	return null
+
+func _get_player_texture() -> Texture2D:
+	for child in player.get_children():
+		if child is Sprite3D:
+			return child.texture
+		elif child is AnimatedSprite3D:
+			# 获取当前帧纹理（可能需要额外处理）
+			var anim_sprite = child as AnimatedSprite3D
+			if anim_sprite.sprite_frames:
+				var frames = anim_sprite.sprite_frames
+				if frames.has_animation(anim_sprite.animation):
+					return frames.get_frame_texture(anim_sprite.animation, anim_sprite.frame)
+	return null
 
 # ===== 物理帧更新 =====
 func _physics_process(delta):
@@ -118,22 +229,35 @@ func _physics_process(delta):
 		#var state = _find_closest_state(target_time)
 		var state = _interpolate_state(target_time)
 		if state:
-			var ghost = _ghost_pool[i]
-			ghost.global_position = state.position
-			ghost.scale = state.scale
+			# 获取物理体和精灵
+			var ghost_body = _ghost_pool[i]
+			var ghost_sprite = _ghost_sprites[i]
+			
+			# 更新物理体位置和缩放（缩放会影响碰撞体大小）
+			ghost_body.global_position = state.position
+			ghost_body.scale = state.scale          # 如果角色会缩放，碰撞体也跟着缩放
+			ghost_body.visible = true
+			
+			# 更新精灵纹理（由于是子节点，位置会自动继承父节点，无需额外设置）
 			if state.texture:
-				ghost.texture = state.texture
-			ghost.visible = true
-			# 透明度：从新到旧逐渐变淡
-			var alpha = 1.0 - float(i) / ghost_count
-			ghost.modulate.a = clamp(alpha, 0.1, 1.0)
+				ghost_sprite.texture = state.texture
+			
+			# 控制可见性和透明度（透明度只影响精灵，不影响物理碰撞）
+			ghost_sprite.visible = true
+			var alpha = ghost_start_alpha * (1 - float(i) / ghost_count)
+			ghost_sprite.modulate.a = clamp(alpha, 0.1, 1.0)
+
 		else:
-			_ghost_pool[i].visible = false
+			# 隐藏对应的物理体和精灵
+			_ghost_pool[i].visible = false          # 物理体隐藏（同时隐藏所有子节点）
+		# 或者只隐藏精灵：_ghost_sprites[i].visible = false
 	
 	# 隐藏多余的 ghost
 	for i in range(ghost_count, _ghost_pool.size()):
 		_ghost_pool[i].visible = false
-		
+	
+	_check_pending_fixed_ghosts()
+	
 	if debug_draw_positions:
 		_update_debug_markers()
 
@@ -197,6 +321,92 @@ func _interpolate_state(target_time: float) -> GhostState:
 	# 返回插值后的状态（timestamp 设为 target_time 便于调试）
 	return GhostState.new(pos, scale, tex, anim, frame, target_time)
 
+func create_fixed_ghost():
+	# 检查是否有可用的动态残影（索引0必须存在且可见）
+	if _ghost_pool.is_empty() or not _ghost_pool[0].visible:
+		printerr("没有可用的动态残影，无法创建固定残影")
+		return false
+	
+	# 从池中取一个可用的（未激活的）固定残影
+	for i in range(max_fixed_ghosts):
+		var body = _fixed_ghost_pool[i]
+		if not body.visible:  # 如果当前是隐藏状态，则复用
+			var sprite = _fixed_ghost_sprites[i]
+			var timer = _fixed_ghost_timers[i]
+			
+			# 从第一个动态残影（索引0）获取位置和缩放
+			var source_body = _ghost_pool[0]
+			var source_sprite = _ghost_sprites[0]
+			
+			# 设置物理体位置和缩放
+			body.global_position = source_body.global_position
+			body.scale = source_body.scale
+			
+			# 复制精灵纹理（从源残影的精灵复制）
+			if source_sprite.texture:
+				sprite.texture = source_sprite.texture
+			# 如果源残影没有纹理，尝试从玩家获取
+			else:
+				var tex = _get_player_texture()
+				if tex:
+					sprite.texture = tex
+					
+			sprite.modulate.a = 1.0   # 完全不透明
+			
+			# 显示
+			body.visible = true
+			sprite.visible = true
+			
+			if _is_fixed_ghost_overlapping_player(i):
+				# 重叠：暂不启用碰撞，并标记为 pending
+				_enable_collision(body, false)
+				_fixed_ghost_pending_enable[i] = true
+			else:
+				# 不重叠：直接启用碰撞
+				_enable_collision(body, true)
+				_fixed_ghost_pending_enable[i] = false
+			
+			# 启动计时器
+			timer.start(fixed_ghost_lifetime)
+			
+			return true
+	
+	printerr("固定残影池已满，无法创建新的固定残影")
+	return false
+
+func _enable_collision(body: StaticBody3D, enabled: bool):
+	# 遍历子节点，找到 CollisionShape3D 并启用/禁用
+	for child in body.get_children():
+		if child is CollisionShape3D:
+			child.disabled = not enabled
+	# 同时设置碰撞层
+	body.collision_layer = 1 if enabled else 0
+
+func _on_fixed_ghost_timeout(body: StaticBody3D, sprite: Sprite3D, timer: Timer):
+	var idx = _fixed_ghost_pool.find(body)
+	if idx != -1:
+		_fixed_ghost_pending_enable[idx] = false
+	
+	_enable_collision(body, false)
+	# 隐藏残影
+	body.visible = false
+	sprite.visible = false
+	# 停止计时器（已自动停止，但可重置）
+	timer.stop()
+
+func _check_pending_fixed_ghosts():
+	for i in range(_fixed_ghost_pool.size()):
+		if _fixed_ghost_pending_enable[i]:
+			# 残影仍然可见（未超时）才检测
+			if _fixed_ghost_pool[i].visible:
+				if not _is_fixed_ghost_overlapping_player(i):
+					# 玩家已离开，启用碰撞
+					_enable_collision(_fixed_ghost_pool[i], true)
+					_fixed_ghost_pending_enable[i] = false
+			else:
+				# 残影已被隐藏（例如超时），重置标记
+				_fixed_ghost_pending_enable[i] = false
+
 # ---- 控制台命令 ----
 func _register_commands() -> void:
 	LimboConsole.register_command(_cmd_info, "player_latency")
@@ -206,6 +416,16 @@ func _register_commands() -> void:
 		func(x: int): visible_ghosts = clamp(x, 0, max_ghosts),
 		"player_latency set_visible",
         "设置可见残影数量 (0~max_ghosts)"
+	)
+	LimboConsole.register_command(
+		func(): create_fixed_ghost(),
+		"player_latency create_fixed",
+		"在当前玩家位置创建一个固定残影（技能）"
+	)
+	LimboConsole.register_command(
+		func(x: float): fixed_ghost_lifetime = max(x, 0.5),
+		"player_latency set_fixed_lifetime",
+		"设置固定残影的持续时间（秒）"
 	)
 
 func _cmd_info() -> void:

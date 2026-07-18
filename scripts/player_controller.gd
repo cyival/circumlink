@@ -3,7 +3,7 @@ extends CharacterBody3D
 # ===== 可调节参数 =====
 @export var walk_speed: float = 6.0
 @export var jump_velocity: float = 10.0
-@export var gravity: float = 15.0
+@export var gravity: float = 9.8
 @export var acceleration: float = 12.0    # 地面加速度
 @export var air_acceleration: float = 4.0 # 空中加速度
 @export var friction: float = 10.0        # 地面摩擦减速

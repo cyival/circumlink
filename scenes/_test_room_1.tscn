@@ -1,5 +1,7 @@
 [gd_scene format=3 uid="uid://d048fl5ep308t"]
 
+[ext_resource type="PackedScene" uid="uid://cnfk76ndj0rux" path="res://prefabs/player_spawn.tscn" id="1_ihpmv"]
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_t1mng"]
 size = Vector3(10, 1, 1)
 
@@ -24,3 +26,6 @@ size = Vector3(5, 2, 1)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D2" unique_id=1736354327]
 shape = SubResource("BoxShape3D_dbgs8")
+
+[node name="PlayerSpawn" parent="." unique_id=1411492268 instance=ExtResource("1_ihpmv")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3810422, 0)

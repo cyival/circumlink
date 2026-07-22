@@ -6,7 +6,7 @@ var noise_emitter: PhantomCameraNoiseEmitter3D
 func _ready() -> void:
 	LimboConsole.register_command(LatencyController.get_latency, "latency", "Get latency")
 	LimboConsole.register_command(func(x: float): LatencyController.latency = x, "latency set", "Set latency")
-	LimboConsole.register_command(emit_noise, "emit_noise")
+	LimboConsole.register_command(emit_noise, "emit_noise", "Emit a noise to the camera")
 	
 func emit_noise() -> void:
 	if noise_emitter:

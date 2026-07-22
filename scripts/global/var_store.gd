@@ -1,5 +1,7 @@
 extends Node
 
+const SAVE_FILE = "user://player_save"
+
 # ===== 信号 =====
 signal var_changed(key: String, new_value: Variant)
 
@@ -50,3 +52,25 @@ func set_all_data(data: Dictionary) -> void:
 	_data = data.duplicate(true)
 	for key in data.keys():
 		var_changed.emit(key, data[key])
+
+func save_to_json() -> void:
+	print("REQUEST SAVE")
+	_data["last_saved"] = Time.get_datetime_string_from_system(true)
+	
+	var file = FileAccess.open(SAVE_FILE, FileAccess.WRITE)
+	if file:
+		file.store_string(JSON.stringify(_data))
+		file.close()
+
+func load_from_json() -> void:
+	print("REQUEST LOAD")
+	if not FileAccess.file_exists(SAVE_FILE):
+		return
+	var file = FileAccess.open(SAVE_FILE, FileAccess.READ)
+	if file:
+		var text = file.get_as_text()
+		var json = JSON.parse_string(text)
+		if json is Dictionary:
+			_data = json
+			print("LOAD SUCCESS")
+	return

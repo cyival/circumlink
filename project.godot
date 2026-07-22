@@ -11,6 +11,7 @@ config_version=5
 [application]
 
 config/name="Circumlink"
+run/main_scene="uid://d3clrkqylipbr"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
 
@@ -79,6 +80,7 @@ limbo_console_search_history={
 [physics]
 
 3d/physics_engine="Jolt Physics"
+common/physics_interpolation=true
 
 [rendering]
 

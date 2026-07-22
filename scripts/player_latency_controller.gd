@@ -72,6 +72,8 @@ func _record_state():
 		Time.get_ticks_msec() / 1000.0   # 当前时间戳（秒）
 	)
 	_history.append(state)
+	
+	print("recorded at ", state.timestamp)
 
 func _ready():
 	_setup_ghost_pool()
@@ -80,6 +82,8 @@ func _ready():
 	if debug_draw_positions:
 		_setup_debug_markers()
 		_setup_debug_labels()
+	
+	_prefill_history()
 
 func _setup_ghost_pool():
 	var player_shape = _get_player_collision_shape()
@@ -100,6 +104,7 @@ func _setup_ghost_pool():
 		sprite.centered = true
 		sprite.visible = false
 		sprite.render_priority = -1                      # 避免渲染与玩家 Sprite 冲突
+		sprite.top_level = true                          # 不再跟随父 StaticBody3D 移动
 		ghost_body.add_child(sprite)
 		
 		add_child(ghost_body)
@@ -186,70 +191,135 @@ func _get_player_texture() -> Texture2D:
 					return frames.get_frame_texture(anim_sprite.animation, anim_sprite.frame)
 	return null
 
-# ===== 物理帧更新 =====
-func _physics_process(delta):
+func _process(_delta):
 	if not enabled or not player:
 		return
 	
-	# 确保 visible_ghosts 不超过池大小
+	interval = LatencyController.get_latency()
+	
 	var display_count = min(visible_ghosts, max_ghosts)
 	if display_count <= 0:
-		hide_all_ghosts()
+		for sprite in _ghost_sprites:
+			sprite.visible = false
 		return
 	
-	interval = LatencyController.get_latency()
 	if interval < 0.2:
-		# 延迟太小，隐藏所有 ghost
-		hide_all_ghosts()
+		for sprite in _ghost_sprites:
+			sprite.visible =  false
+		return
+	
+	# 历史必须足够覆盖最老的残影
+	var needed_time = interval * visible_ghosts
+	if _history.size() < 2 or (Time.get_ticks_msec()/1000.0 - _history[0].timestamp) < needed_time:
+		# 历史不足，隐藏所有动态残影
+		for sprite in _ghost_sprites:
+			sprite.visible = false
 		return
 	
 	if sync_steps_with_latency:
 		step_between_ghosts = interval
-
-	# 采样（固定间隔）
-	_sample_timer += delta
-	if _sample_timer >= _sample_interval:
-		_sample_timer = 0.0
-		#_sample_timer -= _sample_interval
-		_record_state()
 	
-	# 限制历史长度
-	while _history.size() > history_length:
-		_history.pop_front()
-	
-	# 当前时间
 	var now = Time.get_ticks_msec() / 1000.0
 	
-	# 计算每个 ghost 的目标时间
-	# ghost 0（最新）：延迟 interval
-	# ghost i：延迟 interval + i * step_between_ghosts
 	var ghost_count = min(display_count, _history.size())
 	for i in range(ghost_count):
 		var target_time = now - interval - i * step_between_ghosts
-		# 获取物理体和精灵
-		var ghost_body = _ghost_pool[i]
-		var ghost_sprite = _ghost_sprites[i]
-		
-		var success := _apply_interpolated_state(ghost_body, ghost_sprite, target_time)
-		if success:
-			# 设置透明度（基于索引的渐变）
+		var data = _compute_interpolated_state(target_time)
+		if data.get("valid"):
+			var sprite = _ghost_sprites[i]
+			sprite.global_position = data["position"]
+			sprite.scale = data["scale"]
+			if data["texture"]:
+				sprite.texture = data["texture"]
+			sprite.visible = true
 			var alpha = ghost_start_alpha * (1 - float(i) / ghost_count)
-			ghost_sprite.modulate.a = clamp(alpha, 0.1, 1.0)
+			sprite.modulate.a = clamp(alpha, 0.1, 1.0)
+		else:
+			_ghost_sprites[i].visible = false
+
+	# 隐藏多余的
+	for i in range(ghost_count, _ghost_sprites.size()):
+		_ghost_sprites[i].visible = false
+	
+	if _history.size() <= 0:
+		return
+		
+	var hist_oldest = _history[0].timestamp
+	for i in range(ghost_count):
+		var target_time = now - interval - i * step_between_ghosts
+		if target_time < hist_oldest - 0.01:   # 留一点容差
+			print("残影 %d 目标时间 %.3f 早于历史最早 %.3f" % [i, target_time, hist_oldest])
+
+# ===== 物理帧更新 =====
+func _physics_process(delta):
+	if not enabled or not player:
+		return
+
+	# 静态检查
+	var display_count = min(visible_ghosts, max_ghosts)
+	if display_count <= 0:
+		hide_all_ghosts()
+		return
+
+	if interval < 0.2:
+		hide_all_ghosts()
+		return
+
+	# 历史采样
+	_sample_timer += delta
+	while _sample_timer >= _sample_interval:
+		_sample_timer -= _sample_interval
+		_record_state()
+
+	# 裁剪历史长度
+	while _history.size() > history_length:
+		_history.pop_front()
+
+	# 更新动态残影的物理体位置（如果需要碰撞；碰撞层为0时可省略）
+	var ghost_count = min(display_count, _history.size())
+	for i in range(ghost_count):
+		var ghost_body = _ghost_pool[i]
+		# 这里仅更新物理体位置（精灵位置在 _process 中处理）
+		var target_time = Time.get_ticks_msec() / 1000.0 - interval - i * step_between_ghosts
+		var data = _compute_interpolated_state(target_time)   # 纯计算，不产生临时对象
+		if data.get("valid"):
+			ghost_body.global_position = data["position"]
+			ghost_body.scale = data["scale"]
+			ghost_body.visible = true
 		else:
 			ghost_body.visible = false
-	
-	# 隐藏多余的 ghost
+
+	# 隐藏多余的物理体
 	for i in range(ghost_count, _ghost_pool.size()):
 		_ghost_pool[i].visible = false
-	
+
 	_check_pending_fixed_ghosts()
-	
+
 	if debug_draw_positions:
 		_update_debug_markers()
 
 func hide_all_ghosts():
 	for ghost in _ghost_pool:
 		ghost.visible = false
+
+func _prefill_history():
+	if not player:
+		return
+	var now = Time.get_ticks_msec() / 1000.0
+	var required_time = interval * visible_ghosts + 0.5   # 多 0.5 秒缓冲
+	var steps = int(required_time / _sample_interval)
+	# 用当前状态重复插入 steps 条历史，时间戳向前回溯
+	for i in range(steps, -1, -1):   # 从最早到现在
+		var past_time = now - i * _sample_interval
+		var state = GhostState.new(
+			player.global_position,
+			player.scale,
+			_get_player_texture(),
+			"",   # 动画名暂时留空
+			0,
+			past_time
+		)
+		_history.append(state)
 
 # 在历史中查找最接近目标时间的状态（线性搜索，历史较短）
 func _find_closest_state(target_time: float) -> GhostState:
@@ -312,6 +382,45 @@ func _apply_interpolated_state(ghost_body: StaticBody3D, ghost_sprite: Sprite3D,
 	ghost_sprite.visible = true
 
 	return true
+
+# 根据目标时间，从历史中计算出插值后的位置、缩放、纹理等
+func _compute_interpolated_state(target_time: float) -> Dictionary:
+	if _history.is_empty():
+		return {}
+	if _history.size() == 1:
+		var s = _history[0]
+		return {
+			"position": s.position,
+			"scale": s.scale,
+			"texture": s.texture,
+			"valid": true
+		}
+
+	var lo = 0
+	var hi = _history.size() - 1
+	while lo < hi:
+		var mid = (lo + hi) / 2
+		if _history[mid].timestamp < target_time:
+			lo = mid + 1
+		else:
+			hi = mid
+
+	var idx0 = max(lo - 1, 0)
+	var idx1 = min(lo, _history.size() - 1)
+	var s0 = _history[idx0]
+	var s1 = _history[idx1]
+
+	var t = 0.0
+	var dt = s1.timestamp - s0.timestamp
+	if dt > 0:
+		t = clamp((target_time - s0.timestamp) / dt, 0.0, 1.0)
+
+	return {
+		"position": s0.position.lerp(s1.position, t),
+		"scale": s0.scale.lerp(s1.scale, t),
+		"texture": s1.texture if t > 0.5 else s0.texture,
+		"valid": true
+	}
 
 func _apply_state_to_ghost(ghost_body: StaticBody3D, ghost_sprite: Sprite3D, state: GhostState):
 	ghost_body.global_position = state.position

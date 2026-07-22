@@ -1,0 +1,3 @@
+[gd_scene format=3 uid="uid://cnfk76ndj0rux"]
+
+[node name="PlayerSpawn" type="Marker3D" unique_id=1411492268]

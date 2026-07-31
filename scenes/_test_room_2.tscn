@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://bmi13jh2u0031"]
+
+[ext_resource type="PackedScene" uid="uid://cnfk76ndj0rux" path="res://prefabs/player_spawn.tscn" id="2_cbryf"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_t1mng"]
+size = Vector3(50, 1, 1)
+
+[node name="TestRoom2" type="Node3D" unique_id=1561432945]
+
+[node name="PlayerSpawn" parent="." unique_id=1411492268 instance=ExtResource("2_cbryf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8266513, 1.3283274, 0)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=946625282]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=629843974]
+shape = SubResource("BoxShape3D_t1mng")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="StaticBody3D" unique_id=2005670792]
+size = Vector3(50, 1, 1)

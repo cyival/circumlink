@@ -56,6 +56,9 @@ positional_noise = true
 positional_multiplier_z = 0.0
 metadata/_custom_type_script = "uid://cuffvge5ad4aa"
 
+[sub_resource type="Environment" id="Environment_t1mng"]
+glow_enabled = true
+
 [node name="Game" type="Node3D" unique_id=800808023]
 script = SubResource("GDScript_t1mng")
 
@@ -92,6 +95,8 @@ dead_zone_height = 0.2
 show_viewfinder_in_play = true
 spring_length = 5.0
 noise_emitter_layer = 1
+align_transform_with_view = Callable()
+align_position_with_view = Callable()
 metadata/_custom_type_script = "uid://csjccrhj5wnx7"
 
 [node name="PhantomCameraNoiseEmitter3D" type="Node3D" parent="." unique_id=281760962]
@@ -104,6 +109,7 @@ metadata/_custom_type_script = "uid://ccmiitq0sdh7j"
 [node name="Camera3D" type="Camera3D" parent="." unique_id=401583783]
 physics_interpolation_mode = 1
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 5)
+top_level = true
 
 [node name="PhantomCameraHost" type="Node" parent="Camera3D" unique_id=641761549]
 process_priority = 300
@@ -113,3 +119,6 @@ metadata/_custom_type_script = "uid://bd046eokvcnu2"
 
 [node name="LevelController" parent="." unique_id=1716193401 node_paths=PackedStringArray("player") instance=ExtResource("9_0tnpc")]
 player = NodePath("../Player")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1120339418]
+environment = SubResource("Environment_t1mng")

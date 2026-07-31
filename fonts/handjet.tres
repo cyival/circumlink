@@ -1,0 +1,11 @@
+[gd_resource type="FontVariation" format=3 uid="uid://boebk6jlqmxix"]
+
+[ext_resource type="FontFile" uid="uid://c113776805xfo" path="res://fonts/Handjet-VariableFont_ELGR,ELSH,wght.ttf" id="1_dyf6w"]
+
+[resource]
+base_font = ExtResource("1_dyf6w")
+variation_opentype = {
+1162626898: 1,
+1162629960: 2,
+2003265652: 400
+}

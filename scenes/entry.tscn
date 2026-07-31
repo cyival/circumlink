@@ -15,7 +15,7 @@ shader = ExtResource("1_ycj4g")
 shader_parameter/tex = SubResource("ViewportTexture_es41n")
 shader_parameter/mask_type = 2
 shader_parameter/curve = 0.050000002375
-shader_parameter/color_offset = 0.050000026124999986
+shader_parameter/color_offset = 0.05000002612499998
 shader_parameter/mask_brightness = 0.0
 shader_parameter/aspect = 0.75
 
@@ -271,7 +271,7 @@ layout_mode = 2
 size_flags_vertical = 3
 text = "Logged in as █████████, your account hasn't been fully sacrifi█████████████████
 
-Please wait until server repsonsed..."
+Please wait until server responsed..."
 
 [node name="RichTextLabel" type="RichTextLabel" parent="SubViewport/MarginContainer" unique_id=587881046]
 layout_mode = 2

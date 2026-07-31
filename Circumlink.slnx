@@ -1,0 +1,14 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="Editor" />
+    <BuildType Name="Release" />
+  </Configurations>
+  <Project Path="Circumlink.2dog/Circumlink.2dog.csproj" />
+  <Project Path="Circumlink.csproj" />
+  <Project Path="Circumlink.tests/Circumlink.tests.csproj" />
+  <Project Path="Circumlink.web/Circumlink.web.csproj">
+    <BuildType Solution="Editor|*" Project="Debug" />
+    <Build Project="false" />
+  </Project>
+</Solution>

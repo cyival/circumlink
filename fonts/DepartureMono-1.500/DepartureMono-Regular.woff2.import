@@ -2,13 +2,13 @@
 
 importer="font_data_dynamic"
 type="FontFile"
-uid="uid://bekaaaw7ir8sn"
-path="res://.godot/imported/unifont-16.0.02.otf-11915d0ad8ff8dd2cf235096b2dbfb75.fontdata"
+uid="uid://c0kq24pgvndvg"
+path="res://.godot/imported/DepartureMono-Regular.woff2-70d880296015cb31c8a9584a88115e95.fontdata"
 
 [deps]
 
-source_file="res://fonts/unifont-16.0.02.otf"
-dest_files=["res://.godot/imported/unifont-16.0.02.otf-11915d0ad8ff8dd2cf235096b2dbfb75.fontdata"]
+source_file="res://fonts/DepartureMono-1.500/DepartureMono-Regular.woff2"
+dest_files=["res://.godot/imported/DepartureMono-Regular.woff2-70d880296015cb31c8a9584a88115e95.fontdata"]
 
 [params]
 
@@ -22,21 +22,15 @@ msdf_size=48
 allow_system_fallback=true
 force_autohinter=false
 modulate_color_glyphs=false
-hinting=0
-subpixel_positioning=0
+hinting=3
+subpixel_positioning=4
 keep_rounding_remainders=true
 oversampling=0.0
 Fallbacks=null
-fallbacks=[]
+fallbacks=[Resource("uid://bekaaaw7ir8sn", "res://fonts/unifont-16.0.02.otf")]
 Compress=null
 compress=true
-preload=[{
-"chars": [],
-"glyphs": [],
-"name": "新建配置",
-"size": Vector2i(16, 0),
-&"variation_embolden": 0.0
-}]
+preload=[]
 language_support={}
 script_support={}
 opentype_features={}

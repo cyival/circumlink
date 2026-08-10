@@ -5,3 +5,7 @@
 # C#
 bin/
 obj/
+
+# Editor
+.vscode/
+.idea/

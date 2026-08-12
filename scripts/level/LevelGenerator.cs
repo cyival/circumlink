@@ -1,6 +1,8 @@
+using Godot;
+
 namespace Circumlink.Level;
 
-public class LevelGenerator
+public partial class LevelGenerator : Node
 {
 
 }

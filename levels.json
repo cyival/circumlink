@@ -1,4 +1,9 @@
 {
-	"_test_room_1": "res://scenes/_test_room_1.tscn",
-	"_test_room_2": "res://scenes/_test_room_2.tscn",
+  "fresh_start": {
+    "path": "",
+    "policies": ["once_save"],
+    "directions": [""],
+    "tag": "",
+    "player_spawn": true
+  }
 }

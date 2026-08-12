@@ -5,8 +5,9 @@ namespace Circumlink.Level;
 
 public struct LevelInfo
 {
+    public string Id;
+
     [JsonConverter(typeof(LevelGenerationPolicyListConverter))]
     public List<LevelGenerationPolicy> Policies { get; init; }
 
-    public required string Id { get; init; }
 }

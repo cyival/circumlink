@@ -22,7 +22,6 @@
         <Compile Include="Circumlink.web/TwoDogWebBoot.cs" Condition="Exists('$(MSBuildThisFileDirectory)Circumlink.web/TwoDogWebBoot.cs')" />
     </ItemGroup>
     <ItemGroup>
-      <PackageReference Include="fennecs" Version="0.6.12" />
       <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.10" />
       <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="10.0.10" />
     </ItemGroup>

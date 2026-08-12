@@ -1,7 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
+        <!-- Release is windowed (no console window on Windows); Debug/Editor keep the console -->
         <OutputType>Exe</OutputType>
+        <OutputType Condition="'$(Configuration)' == 'Release'">WinExe</OutputType>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
@@ -13,7 +15,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="2dog.engine" Version="4.7.1.65"/>
+        <PackageReference Include="2dog.engine" Version="4.7.1.70"/>
     </ItemGroup>
 
     <ItemGroup>

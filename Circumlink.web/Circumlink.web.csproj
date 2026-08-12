@@ -37,7 +37,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="2dog.engine" Version="4.7.1.65"/>
+        <PackageReference Include="2dog.engine" Version="4.7.1.70"/>
         <PackageReference Include="2dog.browser-wasm" Version="[4.7.1.35]"/>
     </ItemGroup>
     <ItemGroup>

@@ -9,6 +9,7 @@
 [ext_resource type="Script" uid="uid://cuffvge5ad4aa" path="res://addons/phantom_camera/scripts/resources/phantom_camera_noise_3d.gd" id="7_kvpfn"]
 [ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="8_dinhu"]
 [ext_resource type="Script" uid="uid://be8yc5gtv2uw8" path="res://scripts/InterfaceManager.cs" id="9_0tnpc"]
+[ext_resource type="Script" uid="uid://d1dxvtmgwmkl5" path="res://scripts/AudioManager.cs" id="10_vtaks"]
 
 [sub_resource type="Resource" id="Resource_kvuet"]
 script = ExtResource("5_0tnpc")
@@ -65,7 +66,9 @@ decay_time = 0.1
 metadata/_custom_type_script = "uid://ccmiitq0sdh7j"
 
 [node name="Camera3D" type="Camera3D" parent="Base" unique_id=363900589]
+physics_interpolation_mode = 1
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5)
+top_level = true
 current = true
 
 [node name="PhantomCameraHost" type="Node" parent="Base/Camera3D" unique_id=1634966593]
@@ -81,3 +84,6 @@ environment = SubResource("Environment_ir15t")
 script = ExtResource("9_0tnpc")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="InterfaceManager" unique_id=1500673594]
+
+[node name="AudioManager" type="Node" parent="." unique_id=2069056121]
+script = ExtResource("10_vtaks")

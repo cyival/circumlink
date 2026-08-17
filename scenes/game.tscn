@@ -25,9 +25,10 @@ metadata/_custom_type_script = "uid://cuffvge5ad4aa"
 [sub_resource type="Environment" id="Environment_ir15t"]
 glow_enabled = true
 
-[node name="Game" type="Node3D" unique_id=135602039 node_paths=PackedStringArray("InterfaceManager")]
+[node name="Game" type="Node3D" unique_id=135602039 node_paths=PackedStringArray("InterfaceManager", "Player")]
 script = ExtResource("1_uwrxv")
 InterfaceManager = NodePath("InterfaceManager")
+Player = NodePath("Base/Player")
 
 [node name="LevelController" type="Node" parent="." unique_id=1903721843 node_paths=PackedStringArray("BaseNode")]
 script = ExtResource("2_yqjtg")
@@ -37,11 +38,12 @@ BaseNode = NodePath("../Base")
 
 [node name="Player" parent="Base" unique_id=2060740801 instance=ExtResource("3_lnu2h")]
 
-[node name="PhantomCamera3D" type="Node3D" parent="Base" unique_id=1914504870]
+[node name="PhantomCamera3D" type="Node3D" parent="Base" unique_id=1914504870 node_paths=PackedStringArray("follow_target")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5)
 top_level = true
 script = ExtResource("4_gee14")
 follow_mode = 2
+follow_target = NodePath("../Player")
 tween_resource = SubResource("Resource_kvuet")
 follow_offset = Vector3(0, 0, 5)
 follow_damping = true
@@ -51,6 +53,8 @@ dead_zone_height = 0.2
 show_viewfinder_in_play = true
 spring_length = 5.0
 noise_emitter_layer = 1
+align_transform_with_view = Callable()
+align_position_with_view = Callable()
 metadata/_custom_type_script = "uid://csjccrhj5wnx7"
 
 [node name="PhantomCameraNoiseEmitter3D" type="Node3D" parent="Base" unique_id=1204981213]

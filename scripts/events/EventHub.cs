@@ -14,9 +14,13 @@ public partial class EventHub : Node
     private readonly Dictionary<Type, List<Delegate>> _subscriptions = [];
     private readonly ILogger<EventHub> _logger = Debug.Log.GetLogger<EventHub>();
 
-    public override void _Ready()
+    public EventHub()
     {
         Instance = this;
+    }
+
+    public override void _Ready()
+    {
         _logger.LogInformation("EventHub ready.");
     }
 
@@ -45,6 +49,8 @@ public partial class EventHub : Node
 
     public void Publish<T>(T eventData) where T : IEvent
     {
+        _logger.LogInformation("Publishing event: {Event}", eventData);
+
         Type eventType = typeof(T);
         if (!_subscriptions.TryGetValue(eventType, out var handlers))
             return;

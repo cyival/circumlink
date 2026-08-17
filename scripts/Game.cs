@@ -14,6 +14,9 @@ public partial class Game : Node
     [Export]
     public InterfaceManager InterfaceManager;
 
+    [Export]
+    public PlayerController Player;
+
     public SaveData Save = new();
 
     public Game()
@@ -34,6 +37,13 @@ public partial class Game : Node
 
         var entryUi = ResourceLoader.Load<PackedScene>("res://scenes/entry.tscn").Instantiate<Control>();
         InterfaceManager.Display(entryUi);
+
+        EventHub.Publish(new GameReadyEvent());
+
+        // TODO: Maybe this should go to somewhere else
+        this.SubscribeEvent<GameEnteredEvent>(_ => {
+            Player.IsEnabled = true;
+        });
     }
 
     public void LoadGame() => Save = SaveService.Load();

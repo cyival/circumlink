@@ -19,6 +19,14 @@ public partial class InterfaceManager : Node
         _currentDisplay = display;
         if (_currentDisplay != null)
         {
+            // FIXME: May have race conditions if Display is called before the lock is acquired.
+            _currentDisplay.TreeExiting += () => {
+                lock (_currentDisplay)
+                {
+                    _currentDisplay = null;
+                }
+            };
+
             AddChild(_currentDisplay);
             _currentDisplay.Show();
         }

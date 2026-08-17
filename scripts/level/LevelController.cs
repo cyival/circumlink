@@ -1,5 +1,6 @@
 using Godot;
 using Microsoft.Extensions.Logging;
+using Circumlink.Events;
 
 namespace Circumlink.Level;
 
@@ -10,6 +11,9 @@ public partial class LevelController : Node
 
     private LevelGenerator _levelGenerator;
     private ILogger<LevelController> _logger = Debug.Log.GetLogger<LevelController>();
+
+    private Node3D _currentLevelNode;
+    private CharacterBody3D _player => Game.Instance.Player;
 
     public override void _Ready()
     {
@@ -24,5 +28,19 @@ public partial class LevelController : Node
         _levelGenerator = new LevelGenerator(levelRegistry);
         AddChild(_levelGenerator);
 
+        // Generate the level when the game is ready.
+        this.SubscribeEvent<GameReadyEvent>((e) =>
+        {
+            _currentLevelNode = _levelGenerator.GenerateLevel();
+            BaseNode.AddChild(_currentLevelNode);
+        });
+
+        this.SubscribeEvent<LevelGeneratedEvent>((e) =>
+        {
+            var spawnPoint = e.LevelNode.GetNodeOrNull<Marker3D>("PlayerSpawn");
+            if (spawnPoint is not null)
+                _player.Position = spawnPoint.Position;
+            _logger.LogInformation("Sync player position to spawn point: {}", spawnPoint?.Position);
+        });
     }
 }

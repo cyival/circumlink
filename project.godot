@@ -13,6 +13,7 @@ config_version=5
 config/name="Circumlink"
 run/main_scene="uid://hy70ax30008c"
 config/features=PackedStringArray("4.7", "C#", "Forward Plus")
+boot_splash/show_image=false
 config/icon="res://icon.svg"
 
 [autoload]

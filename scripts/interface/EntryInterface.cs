@@ -48,7 +48,8 @@ public partial class EntryInterface : Control
     {
         if (animName == "start")
         {
-            // TODO
+            Game.Instance.EventHub.Publish(new Events.GameEnteredEvent());
+            QueueFree();
         }
     }
 

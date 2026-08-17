@@ -9,6 +9,8 @@ public static class Log
     private static readonly ILoggerFactory _factory = LoggerFactory.Create(builder =>
     {
         builder.AddGodotConsole();
+        if (Godot.OS.HasFeature("debug"))
+            builder.SetMinimumLevel(LogLevel.Debug);
     });
 
     private static readonly ILogger _defaultLogger = _factory.CreateLogger("Application");

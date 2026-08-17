@@ -49,7 +49,7 @@ public partial class EventHub : Node
 
     public void Publish<T>(T eventData) where T : IEvent
     {
-        _logger.LogInformation("Publishing event: {Event}", eventData);
+        _logger.LogDebug("Publishing event: {Event}", eventData);
 
         Type eventType = typeof(T);
         if (!_subscriptions.TryGetValue(eventType, out var handlers))

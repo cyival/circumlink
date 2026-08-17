@@ -11,7 +11,7 @@ public static class Log
         builder.AddGodotConsole();
     });
 
-    private static readonly ILogger _defaultLogger = _factory.CreateLogger("app");
+    private static readonly ILogger _defaultLogger = _factory.CreateLogger("Application");
 
     public static ILogger GetLogger(string name) => _factory.CreateLogger(name);
 

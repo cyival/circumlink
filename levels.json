@@ -1,7 +1,7 @@
 {
   "fresh_start": {
     "path": "",
-    "policies": ["once_save"],
+    "policies": ["once"],
     "directions": [""],
     "tag": "",
     "player_spawn": true

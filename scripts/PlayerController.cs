@@ -17,10 +17,15 @@ public partial class PlayerController : CharacterBody3D
     [Export]
     public float Friction = 10.0f;        // 地面摩擦减速
 
+    public bool IsEnabled = false;
+
     private float _currnetAcceleration = 0.0f;
+
 
     public override void _PhysicsProcess(double delta)
     {
+        if (!IsEnabled) return;
+
         // Gravity
         if (!IsOnFloor())
         {

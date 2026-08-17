@@ -18,8 +18,20 @@ public sealed class GodotConsoleLogger(string categoryName) : ILogger
         //if (config.EventId == 0 || config.EventId == eventId.Id)
 
         var message = formatter(state, exception);
-        GD.Print($"[{categoryName}] {logLevel}: {message}");
+        GD.Print($"[{categoryName}] {GetShortLogLevel(logLevel)}:\n    {message}");
 
         // TODO: Print warning
     }
+
+    private static string GetShortLogLevel(LogLevel logLevel) => logLevel switch
+    {
+        LogLevel.Trace => "TRACE",
+        LogLevel.Debug => "DEBUG",
+        LogLevel.Information => "INFO",
+        LogLevel.Warning => "WARN",
+        LogLevel.Error => "ERROR",
+        LogLevel.Critical => "CRITICAL",
+        LogLevel.None => "NONE",
+        _ => logLevel.ToString(),
+    };
 }

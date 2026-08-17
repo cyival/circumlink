@@ -37,8 +37,24 @@ Basically, these are meters for determining when to spawn enemies:
 - Previous level generation results. When the spawned enemies count reaches a certain threshold, next level will not spawn enemies.
 - Current player state.
   - Health. When the player's health reaches a certain threshold, enemies will not be spawned.
+  - In some special cases, enemies will still be spawned. In these cases, player should get healed.
 - Player spawn. If the level is used for player spawn, enemies will not be spawned.
 
 Enemies will be spawned when the player enter level.
 
+## Save
+
+Levels which have been generated, its id will be saved in save data. So do the tags.
+
 ## Related class
+
+[`LevelInfo`](../scripts/level/LevelInfo.cs)
+
+[`LevelGenerationPolicy`](../scripts/level/LevelGenerationPolicy.cs)
+[`LevelGenerationPolicyWithId`](../scripts/level/LevelGenerationPolicyWithId.cs)
+[`LevelGenerationPolicyWithTag`](../scripts/level/LevelGenerationPolicyWithTag.cs)
+[`LevelGenerationPolicyWithTypeOnly`](../scripts/level/LevelGenerationPolicyWithTypeOnly.cs)
+
+[`LevelGenerator`](../scripts/level/LevelGenerator.cs)
+[`LevelController`](../scripts/level/LevelController.cs)
+[`LevelRegistry`](../scripts/level/LevelRegistry.cs)

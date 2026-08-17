@@ -15,7 +15,10 @@ public class LevelRegistry(List<LevelInfo> levels)
         Debug.Log.LogInformation("Loading level registry...");
         var json = FileAccess.GetFileAsString(LevelInfoPath);
 
-        var options = new JsonSerializerOptions();
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+        };
         options.Converters.Add(new LevelInfoListConverter());
 
         var levels = JsonSerializer.Deserialize<List<LevelInfo>>(json, options);

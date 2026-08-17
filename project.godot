@@ -17,11 +17,8 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-VarStore="*uid://cccksywdnyxnl"
-LatencyController="*uid://c0182mhyws34"
 PhantomCameraManager="*uid://duq6jhf6unyis"
 LimboConsole="*uid://dyxornv8vwibg"
-ConsoleCommand="*uid://byk20es0l10cu"
 
 [display]
 

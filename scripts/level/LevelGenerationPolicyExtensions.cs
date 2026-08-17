@@ -8,6 +8,7 @@ public static class LevelGenerationPolicyExtensions
     {
         public static LevelGenerationPolicy Parse(string input)
         {
+            Godot.GD.Print($"Parsing policy: {input}");
             if (TryParse(input, out var result))
                 return result!;
             throw new FormatException($"Invalid input format: '{input}'. Expected 'Type', 'Type:Id', or 'Type#Tag'.");

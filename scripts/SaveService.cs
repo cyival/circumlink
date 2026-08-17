@@ -52,4 +52,9 @@ public sealed class SaveService
     {
         File.WriteAllText(_path, JsonSerializer.Serialize(data, Context.SaveData));
     }
+
+    public string GetSavePath()
+    {
+        return _path;
+    }
 }

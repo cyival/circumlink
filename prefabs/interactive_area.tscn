@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://bk3h0tq27nvn2"]
+
+[ext_resource type="Script" uid="uid://cb0261q02fpnw" path="res://scripts/level/InteractiveArea.cs" id="1_nxr3v"]
+
+[node name="InteractiveArea" type="Area3D" unique_id=711753774]
+script = ExtResource("1_nxr3v")
+ShowMessage = true

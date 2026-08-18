@@ -1,6 +1,7 @@
 using Godot;
 using Circumlink.Debug;
 using Circumlink.Events;
+using Circumlink.Interface;
 
 namespace Circumlink;
 
@@ -12,10 +13,10 @@ public partial class Game : Node
     public readonly EventHub EventHub = new();
 
     [Export]
-    public InterfaceManager InterfaceManager;
+    public InterfaceManager InterfaceManager { get; private set; }
 
     [Export]
-    public PlayerController Player;
+    public PlayerController Player { get; private set;}
 
     public SaveData Save = new();
 

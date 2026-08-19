@@ -32,6 +32,9 @@ public partial class Game : Node
     {
         AddChild(EventHub);
 
+        // Set window minimum size
+        GetTree().Root.MinSize = new Vector2I(1152, 648);
+
         Log.LogInformation("Game scene ready.");
 
         Log.LogInformation("Loading entry ui");

@@ -28,6 +28,7 @@ public partial class InterfaceManager : Node
             {
                 lock (_currentDisplay)
                 {
+                    _logger.LogDebug("Display {display} is hiding.", _currentDisplay);
                     _currentDisplay = null;
                     _hud.Show();
                 }
@@ -36,6 +37,7 @@ public partial class InterfaceManager : Node
             AddChild(_currentDisplay);
             _currentDisplay.Show();
             _hud.Hide();
+            _logger.LogDebug("Display {display} is showing.", _currentDisplay);
         }
         else
         {

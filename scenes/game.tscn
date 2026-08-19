@@ -10,6 +10,7 @@
 [ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="8_dinhu"]
 [ext_resource type="Script" uid="uid://be8yc5gtv2uw8" path="res://scripts/interface/InterfaceManager.cs" id="9_0tnpc"]
 [ext_resource type="Script" uid="uid://d1dxvtmgwmkl5" path="res://scripts/AudioManager.cs" id="10_vtaks"]
+[ext_resource type="Script" uid="uid://bpbdpspx3iwb4" path="res://scripts/CameraController.cs" id="11_kvpfn"]
 
 [sub_resource type="Resource" id="Resource_kvuet"]
 script = ExtResource("5_0tnpc")
@@ -39,7 +40,7 @@ BaseNode = NodePath("../Base")
 
 [node name="Player" parent="Base" unique_id=2060740801 instance=ExtResource("3_lnu2h")]
 
-[node name="PhantomCamera3D" type="Node3D" parent="Base" unique_id=1914504870 node_paths=PackedStringArray("follow_target")]
+[node name="PlayerCamera" type="Node3D" parent="Base" unique_id=1914504870 node_paths=PackedStringArray("follow_target")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5)
 top_level = true
 script = ExtResource("4_gee14")
@@ -87,3 +88,7 @@ script = ExtResource("9_0tnpc")
 
 [node name="AudioManager" type="Node" parent="." unique_id=2069056121]
 script = ExtResource("10_vtaks")
+
+[node name="CameraController" type="Node" parent="." unique_id=1656648192]
+script = ExtResource("11_kvpfn")
+_playerCameraPath = NodePath("../Base/PlayerCamera")

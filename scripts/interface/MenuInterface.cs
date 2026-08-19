@@ -1,0 +1,40 @@
+using Godot;
+
+namespace Circumlink.Interface;
+
+public partial class MenuInterface : Control
+{
+    [Export]
+    public Button ContinueButton;
+
+    [Export]
+    public Button SettingsButton;
+
+    [Export]
+    public Button ExitButton;
+
+    [Export]
+    public PanelContainer MenuPanel;
+
+    [Export]
+    public ColorRect ScreenEffect;
+
+    public override void _Ready()
+    {
+        ContinueButton.Pressed += () =>
+        {
+            var tween = CreateTween();
+            tween.SetEase(Tween.EaseType.Out);
+            tween.SetTrans(Tween.TransitionType.Cubic);
+
+            tween.SetParallel();
+            tween.TweenProperty(MenuPanel, "offset_transform_position", new Vector2(MenuPanel.Size.X + 50, 0), 0.5f);
+            tween.TweenProperty(ScreenEffect, "modulate", Colors.Transparent, 0.6f);
+        };
+
+        ExitButton.Pressed += () =>
+        {
+            GetTree().Quit();
+        };
+    }
+}

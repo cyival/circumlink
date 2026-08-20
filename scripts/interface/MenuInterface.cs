@@ -19,8 +19,19 @@ public partial class MenuInterface : Control
     [Export]
     public ColorRect ScreenEffect;
 
+    private CameraController _cameraController => Game.Instance.CameraController;
+
     public override void _Ready()
     {
+        _cameraController.FocusSubCameraOn(Game.Instance.Player);
+        _cameraController.UseSubCamera();
+
+        // maybe need to put this in InterfaceManager
+        Game.Instance.Player.IsControlEnabled = false;
+
+        // idk why is this needed, seems related to sequencing
+        Game.Instance.InterfaceManager.Hud.Hide();
+
         ContinueButton.Pressed += () =>
         {
             var tween = CreateTween();
@@ -29,7 +40,12 @@ public partial class MenuInterface : Control
 
             tween.SetParallel();
             tween.TweenProperty(MenuPanel, "offset_transform_position", new Vector2(MenuPanel.Size.X + 50, 0), 0.5f);
-            tween.TweenProperty(ScreenEffect, "modulate", Colors.Transparent, 0.6f);
+            tween.TweenProperty(ScreenEffect.Material, "shader_parameter/blur_size", Vector2.Zero, 0.6f);
+            tween.SetParallel(false);
+            tween.TweenCallback(Callable.From(QueueFree));
+
+            _cameraController.UseSubCamera(false);
+            Game.Instance.Player.IsControlEnabled = true;
         };
 
         ExitButton.Pressed += () =>

@@ -16,7 +16,10 @@ public partial class Game : Node
     public InterfaceManager InterfaceManager { get; private set; }
 
     [Export]
-    public PlayerController Player { get; private set;}
+    public CameraController CameraController { get; private set; }
+
+    [Export]
+    public PlayerController Player { get; private set; }
 
     public SaveData Save = new();
 
@@ -47,6 +50,8 @@ public partial class Game : Node
         // TODO: Maybe this should go to somewhere else
         this.SubscribeEvent<GameEnteredEvent>(_ => {
             Player.IsEnabled = true;
+            var menu = ResourceLoader.Load<PackedScene>("res://scenes/interface/menu.tscn").Instantiate<Control>();
+            InterfaceManager.Display(menu);
         });
     }
 

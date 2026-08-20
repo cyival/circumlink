@@ -8,9 +8,9 @@ public partial class InterfaceManager : Node
 {
     private ILogger<InterfaceManager> _logger = Debug.Log.GetLogger<InterfaceManager>();
 
-    private Control _currentDisplay;
+    public Control CurrentDisplay { get; private set; }
 
-    private HudInterface _hud;
+    public HudInterface Hud { get; private set; }
 
     public override void _Ready()
     {
@@ -20,24 +20,26 @@ public partial class InterfaceManager : Node
 
     public void Display(Control display)
     {
-        _currentDisplay = display;
-        if (_currentDisplay is not null)
+        CurrentDisplay = display;
+        if (CurrentDisplay is not null)
         {
             // FIXME: May have race conditions if Display is called before the lock is acquired.
-            _currentDisplay.TreeExiting += () =>
+            // FIXME: Unlink TreeExiting event when current display switches
+            CurrentDisplay.TreeExiting += () =>
             {
-                lock (_currentDisplay)
+                lock (CurrentDisplay)
                 {
-                    _logger.LogDebug("Display {display} is hiding.", _currentDisplay);
-                    _currentDisplay = null;
-                    _hud.Show();
+                    _logger.LogDebug("Display {display} is hiding.", CurrentDisplay);
+                    CurrentDisplay = null;
+                    Hud.Show();
                 }
             };
 
-            AddChild(_currentDisplay);
-            _currentDisplay.Show();
-            _hud.Hide();
-            _logger.LogDebug("Display {display} is showing.", _currentDisplay);
+            _logger.LogDebug("Display {display} is showing.", CurrentDisplay);
+            AddChild(CurrentDisplay);
+
+            CurrentDisplay.Show();
+            Hud.Hide();
         }
         else
         {
@@ -45,17 +47,17 @@ public partial class InterfaceManager : Node
         }
     }
 
-    public void ShowMessage(string message) => _hud.ShowMessage(message);
-    public void HideMessage() => _hud.HideMessage();
+    public void ShowMessage(string message) => Hud.ShowMessage(message);
+    public void HideMessage() => Hud.HideMessage();
 
     private void LoadHud()
     {
-        _hud = ResourceLoader.Load<PackedScene>("res://scenes/interface/hud.tscn").Instantiate<HudInterface>();
-        AddChild(_hud);
+        Hud = ResourceLoader.Load<PackedScene>("res://scenes/interface/hud.tscn").Instantiate<HudInterface>();
+        AddChild(Hud);
 
-        if (_currentDisplay is not null)
+        if (CurrentDisplay is not null)
         {
-            _hud.Show();
+            Hud.Show();
         }
     }
 }

@@ -18,6 +18,7 @@ public partial class PlayerController : CharacterBody3D
     public float Friction = 10.0f;        // 地面摩擦减速
 
     public bool IsEnabled = false;
+    public bool IsControlEnabled = true;
 
     private float _currnetAcceleration = 0.0f;
 
@@ -32,7 +33,7 @@ public partial class PlayerController : CharacterBody3D
             Velocity = Velocity with { Y = Velocity.Y - (float)delta * Gravity };
         }
 
-        var horizontalInput = Input.GetAxis("move_left", "move_right");
+        var horizontalInput = IsControlEnabled ? Input.GetAxis("move_left", "move_right") : 0;
 
         // Select acceleration based on ground or air state
         _currnetAcceleration = IsOnFloor() ? Acceleration : AirAcceleration;
@@ -54,7 +55,7 @@ public partial class PlayerController : CharacterBody3D
         Velocity = Velocity with { Z = 0 };
 
         // Jump (only when on the ground)
-        if (Input.IsActionJustPressed("jump") && IsOnFloor())
+        if (IsControlEnabled && Input.IsActionJustPressed("jump") && IsOnFloor())
         {
             Velocity = Velocity with { Y = JumpVelocity };
         }

@@ -48,7 +48,8 @@ public partial class EntryInterface : Control
     {
         if (animName == "start")
         {
-            Game.Instance.EventHub.Publish(new Events.GameEnteredEvent());
+            // FIXME: This may cause sequencing issues
+            TreeExited += () => Game.Instance.EventHub.Publish(new Events.GameEnteredEvent());
             QueueFree();
         }
     }

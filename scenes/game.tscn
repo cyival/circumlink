@@ -4,16 +4,13 @@
 [ext_resource type="Script" uid="uid://combj5yxpgb5r" path="res://scripts/level/LevelController.cs" id="2_yqjtg"]
 [ext_resource type="PackedScene" uid="uid://bqk1liltv7v12" path="res://prefabs/player.tscn" id="3_lnu2h"]
 [ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="4_gee14"]
-[ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="5_0tnpc"]
+[ext_resource type="Resource" uid="uid://b3hf3yggyoncq" path="res://camera_tween.tres" id="5_kvpfn"]
 [ext_resource type="Script" uid="uid://ccmiitq0sdh7j" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_noise_emitter_3d.gd" id="6_vtaks"]
 [ext_resource type="Script" uid="uid://cuffvge5ad4aa" path="res://addons/phantom_camera/scripts/resources/phantom_camera_noise_3d.gd" id="7_kvpfn"]
 [ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="8_dinhu"]
 [ext_resource type="Script" uid="uid://be8yc5gtv2uw8" path="res://scripts/interface/InterfaceManager.cs" id="9_0tnpc"]
 [ext_resource type="Script" uid="uid://d1dxvtmgwmkl5" path="res://scripts/AudioManager.cs" id="10_vtaks"]
 [ext_resource type="Script" uid="uid://bpbdpspx3iwb4" path="res://scripts/CameraController.cs" id="11_kvpfn"]
-
-[sub_resource type="Resource" id="Resource_kvuet"]
-script = ExtResource("5_0tnpc")
 
 [sub_resource type="Resource" id="Resource_trtic"]
 script = ExtResource("7_kvpfn")
@@ -27,9 +24,10 @@ metadata/_custom_type_script = "uid://cuffvge5ad4aa"
 [sub_resource type="Environment" id="Environment_ir15t"]
 glow_enabled = true
 
-[node name="Game" type="Node3D" unique_id=135602039 node_paths=PackedStringArray("InterfaceManager", "Player")]
+[node name="Game" type="Node3D" unique_id=135602039 node_paths=PackedStringArray("InterfaceManager", "CameraController", "Player")]
 script = ExtResource("1_uwrxv")
 InterfaceManager = NodePath("InterfaceManager")
+CameraController = NodePath("CameraController")
 Player = NodePath("Base/Player")
 
 [node name="LevelController" type="Node" parent="." unique_id=1903721843 node_paths=PackedStringArray("BaseNode")]
@@ -46,7 +44,7 @@ top_level = true
 script = ExtResource("4_gee14")
 follow_mode = 2
 follow_target = NodePath("../Player")
-tween_resource = SubResource("Resource_kvuet")
+tween_resource = ExtResource("5_kvpfn")
 follow_offset = Vector3(0, 0, 5)
 follow_damping = true
 follow_distance = 5.0
@@ -68,7 +66,7 @@ metadata/_custom_type_script = "uid://ccmiitq0sdh7j"
 
 [node name="Camera3D" type="Camera3D" parent="Base" unique_id=363900589]
 physics_interpolation_mode = 1
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 5)
 top_level = true
 current = true
 
@@ -81,6 +79,18 @@ metadata/_custom_type_script = "uid://bd046eokvcnu2"
 [node name="WorldEnvironment" type="WorldEnvironment" parent="Base" unique_id=2077069583]
 environment = SubResource("Environment_ir15t")
 
+[node name="SubCamera" type="Node3D" parent="Base" unique_id=127285834 node_paths=PackedStringArray("follow_target")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 5)
+top_level = true
+script = ExtResource("4_gee14")
+follow_mode = 2
+follow_target = NodePath("../Player")
+tween_resource = ExtResource("5_kvpfn")
+follow_offset = Vector3(5, 0, 5)
+align_transform_with_view = Callable()
+align_position_with_view = Callable()
+metadata/_custom_type_script = "uid://csjccrhj5wnx7"
+
 [node name="InterfaceManager" type="Node" parent="." unique_id=583434856]
 script = ExtResource("9_0tnpc")
 
@@ -92,3 +102,4 @@ script = ExtResource("10_vtaks")
 [node name="CameraController" type="Node" parent="." unique_id=1656648192]
 script = ExtResource("11_kvpfn")
 _playerCameraPath = NodePath("../Base/PlayerCamera")
+_subCameraPath = NodePath("../Base/SubCamera")

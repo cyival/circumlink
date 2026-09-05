@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://c2cfkr3u28yl3"]
 
-[ext_resource type="Script" uid="uid://3d0wkq3r8uy8" path="res://scripts/player_latency_controller.gd" id="1_chu5r"]
+[ext_resource type="Script" uid="uid://dh4pur4ejyn0o" path="res://scripts/PlayerLatencyController.cs" id="1_chu5r"]
 
 [node name="PlayerLatencyController" type="Node3D" unique_id=1269806519]
 script = ExtResource("1_chu5r")

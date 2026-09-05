@@ -28,11 +28,23 @@ public partial class EventHub : Node
     public void Subscribe<T>(Action<T> handler) where T : IEvent
     {
         var eventType = typeof(T);
-        if (!_subscriptions.ContainsKey(eventType))
+        if (!_subscriptions.TryGetValue(eventType, out var handlers))
         {
-            _subscriptions[eventType] = new List<Delegate>();
+            handlers = [];
+            _subscriptions[eventType] = handlers;
         }
-        _subscriptions[eventType].Add(handler);
+
+        handlers.Add(handler);
+    }
+
+    /// <summary>
+    /// Returns true when at least one handler is subscribed to <typeparamref name="T"/>.
+    /// Hot paths can check this before constructing an event object to avoid allocations
+    /// when nobody is listening.
+    /// </summary>
+    public bool HasSubscribers<T>() where T : IEvent
+    {
+        return _subscriptions.ContainsKey(typeof(T));
     }
 
     public void Unsubscribe<T>(Action<T> handler) where T : IEvent
@@ -50,12 +62,12 @@ public partial class EventHub : Node
 
     public void Publish<T>(T eventData) where T : IEvent
     {
-        if (!EventLogFilter.Contains(typeof(T).Name))
-            _logger.LogDebug("Publishing event: {Event}", eventData);
-
         Type eventType = typeof(T);
         if (!_subscriptions.TryGetValue(eventType, out var handlers))
             return;
+
+        if (!EventLogFilter.Contains(eventType.Name))
+            _logger.LogDebug("Publishing event: {Event}", eventData);
 
         // IMPORTANT: Copy the list to prevent modification exceptions
         // (in case a handler tries to unsubscribe during the publish)

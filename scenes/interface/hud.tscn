@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://kp8eiaa1s0sn" path="res://scripts/interface/HudInterface.cs" id="1_hr4bq"]
 
-[node name="HUD" type="Control" unique_id=2131657509 node_paths=PackedStringArray("_messageDisplay")]
+[node name="HUD" type="Control" unique_id=2131657509 node_paths=PackedStringArray("_messageDisplay", "_latencyLabel")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,6 +11,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_hr4bq")
 _messageDisplay = NodePath("MarginContainer/MessageDisplay")
+_latencyLabel = NodePath("MarginContainer/Label")
 
 [node name="MarginContainer" type="MarginContainer" parent="." unique_id=137998891]
 layout_mode = 1

@@ -12,6 +12,7 @@
 [ext_resource type="Script" uid="uid://d1dxvtmgwmkl5" path="res://scripts/AudioManager.cs" id="10_vtaks"]
 [ext_resource type="Script" uid="uid://bpbdpspx3iwb4" path="res://scripts/CameraController.cs" id="11_kvpfn"]
 [ext_resource type="Script" uid="uid://bxxqimtka1455" path="res://scripts/LatencyController.cs" id="12_dinhu"]
+[ext_resource type="PackedScene" uid="uid://c2cfkr3u28yl3" path="res://prefabs/player_latency_controller.tscn" id="13_player_latency"]
 
 [sub_resource type="Resource" id="Resource_trtic"]
 script = ExtResource("7_kvpfn")
@@ -25,10 +26,11 @@ metadata/_custom_type_script = "uid://cuffvge5ad4aa"
 [sub_resource type="Environment" id="Environment_ir15t"]
 glow_enabled = true
 
-[node name="Game" type="Node3D" unique_id=135602039 node_paths=PackedStringArray("InterfaceManager", "CameraController", "Player")]
+[node name="Game" type="Node3D" unique_id=135602039 node_paths=PackedStringArray("InterfaceManager", "CameraController", "LatencyController", "Player")]
 script = ExtResource("1_uwrxv")
 InterfaceManager = NodePath("InterfaceManager")
 CameraController = NodePath("CameraController")
+LatencyController = NodePath("LatencyController")
 Player = NodePath("Base/Player")
 
 [node name="LevelController" type="Node" parent="." unique_id=1903721843 node_paths=PackedStringArray("BaseNode")]
@@ -36,6 +38,9 @@ script = ExtResource("2_yqjtg")
 BaseNode = NodePath("../Base")
 
 [node name="Base" type="Node3D" parent="." unique_id=350292806]
+
+[node name="PlayerLatencyController" parent="Base" unique_id=1269806519 node_paths=PackedStringArray("Player") instance=ExtResource("13_player_latency")]
+Player = NodePath("../Player")
 
 [node name="Player" parent="Base" unique_id=2060740801 instance=ExtResource("3_lnu2h")]
 
@@ -107,6 +112,3 @@ _subCameraPath = NodePath("../Base/SubCamera")
 
 [node name="LatencyController" type="Node" parent="." unique_id=1792235252]
 script = ExtResource("12_dinhu")
-MinRecordLatencySecs = 0.2
-RecordIntervalSecs = 0.02
-IsEnabled = true

@@ -22,6 +22,7 @@
         <Compile Include="Circumlink.web/TwoDogWebBoot.cs" Condition="Exists('$(MSBuildThisFileDirectory)Circumlink.web/TwoDogWebBoot.cs')" />
     </ItemGroup>
     <ItemGroup>
+      <PackageReference Include="LimboConsole.Sharp" Version="0.0.1-beta-010" />
       <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.10" />
       <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="10.0.10" />
     </ItemGroup>

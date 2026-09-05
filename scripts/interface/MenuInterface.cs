@@ -31,7 +31,7 @@ public partial class MenuInterface : Control
         _cameraController.FocusSubCameraOn(Game.Instance.Player);
         _cameraController.UseSubCamera();
 
-        // maybe need to put this in InterfaceManager
+        // Maybe need to put this in InterfaceManager
         Game.Instance.Player.IsControlEnabled = false;
 
         // idk why is this needed, seems related to sequencing
@@ -47,15 +47,25 @@ public partial class MenuInterface : Control
             tween.TweenProperty(MenuPanel, "offset_transform_position", new Vector2(MenuPanel.Size.X + 50, 0), 0.5f);
             tween.TweenProperty(ScreenEffect.Material, "shader_parameter/blur_size", Vector2.Zero, 0.6f);
             tween.SetParallel(false);
-            tween.TweenCallback(Callable.From(QueueFree));
+            tween.TweenCallback(Callable.From(OnContinueTweenCompleted));
 
             _cameraController.UseSubCamera(false);
             Game.Instance.Player.IsControlEnabled = true;
+        };
+
+        SettingsButton.Pressed += () =>
+        {
+            OptionsContainer.Visible = !OptionsContainer.Visible;
         };
 
         ExitButton.Pressed += () =>
         {
             GetTree().Quit();
         };
+    }
+
+    private void OnContinueTweenCompleted()
+    {
+        QueueFree();
     }
 }

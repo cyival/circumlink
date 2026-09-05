@@ -60,13 +60,7 @@ public partial class Game : Node
         LoadDebugSettings();
 
         EventHub.Publish(new GameReadyEvent());
-
-        // TODO: Maybe this should go to somewhere else
-        this.SubscribeEvent<GameEnteredEvent>(_ => {
-            Player.IsEnabled = true;
-            var menu = ResourceLoader.Load<PackedScene>("res://scenes/interface/menu.tscn").Instantiate<Control>();
-            InterfaceManager.Display(menu);
-        });
+        SubscribeGameEvents();
     }
 
     public void LoadGame()
@@ -79,6 +73,16 @@ public partial class Game : Node
     {
         Save.Settings ??= new GameSettings();
         SaveService.Save(Save);
+    }
+
+    private void SubscribeGameEvents()
+    {
+        this.SubscribeEvent<GameEnteredEvent>(_ =>
+        {
+            Player.IsEnabled = true;
+            var menu = ResourceLoader.Load<PackedScene>("res://scenes/interface/menu.tscn").Instantiate<Control>();
+            InterfaceManager.Display(menu);
+        });
     }
 
     private void LoadDebugSettings()

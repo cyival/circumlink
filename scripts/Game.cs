@@ -69,8 +69,17 @@ public partial class Game : Node
         });
     }
 
-    public void LoadGame() => Save = SaveService.Load();
-    public void SaveGame() => SaveService.Save(Save);
+    public void LoadGame()
+    {
+        Save = SaveService.Load();
+        SettingsController.ApplySettings();
+    }
+
+    public void SaveGame()
+    {
+        Save.Settings ??= new GameSettings();
+        SaveService.Save(Save);
+    }
 
     private void LoadDebugSettings()
     {

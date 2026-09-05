@@ -4,7 +4,9 @@ namespace Circumlink;
 
 public sealed class SaveData
 {
-    public GameSettings Settings { get; set; }
+    public int SaveVersion { get; set; } = 1;
+
+    public GameSettings Settings { get; set; } = new();
 }
 
 [JsonSerializable(typeof(SaveData))]

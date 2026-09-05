@@ -1,13 +1,15 @@
 [gd_scene format=3 uid="uid://d048fl5ep308t"]
 
 [ext_resource type="PackedScene" uid="uid://cnfk76ndj0rux" path="res://prefabs/player_spawn.tscn" id="1_ihpmv"]
-[ext_resource type="PackedScene" uid="uid://dlrw6i62tuoor" path="res://prefabs/portal_button.glb" id="2_ax6x0"]
+[ext_resource type="PackedScene" uid="uid://bk3h0tq27nvn2" path="res://prefabs/interactive_area.tscn" id="2_ax6x0"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_t1mng"]
 size = Vector3(10, 1, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_dbgs8"]
 size = Vector3(5, 2, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_es41n"]
 
 [node name="TestRoom1" type="Node3D" unique_id=800808023]
 
@@ -31,5 +33,12 @@ shape = SubResource("BoxShape3D_dbgs8")
 [node name="PlayerSpawn" parent="." unique_id=1411492268 instance=ExtResource("1_ihpmv")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3810422, 0)
 
-[node name="button" parent="." unique_id=1208464399 instance=ExtResource("2_ax6x0")]
-transform = Transform3D(0.01, 0, 0, 0, 0.01, 0, 0, 0, 0.01, 0, 0.4630121, -0.648703)
+[node name="InteractiveArea" parent="." unique_id=711753774 instance=ExtResource("2_ax6x0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.2544193, 1.0136898, 0.004728675)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractiveArea" unique_id=634499299]
+shape = SubResource("BoxShape3D_es41n")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=2085959337]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 5, 0)
+light_energy = 0.5

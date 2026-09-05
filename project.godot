@@ -11,22 +11,21 @@ config_version=5
 [application]
 
 config/name="Circumlink"
-run/main_scene="uid://d3clrkqylipbr"
-config/features=PackedStringArray("4.8", "Forward Plus")
+config/version="0.1.0"
+run/main_scene="uid://hy70ax30008c"
+config/features=PackedStringArray("4.7", "C#", "Forward Plus")
+boot_splash/show_image=false
 config/icon="res://icon.svg"
 
 [autoload]
 
-VarStore="*uid://cccksywdnyxnl"
-LatencyController="*uid://c0182mhyws34"
 PhantomCameraManager="*uid://duq6jhf6unyis"
 LimboConsole="*uid://dyxornv8vwibg"
-ConsoleCommand="*uid://byk20es0l10cu"
 
 [display]
 
 window/stretch/mode="canvas_items"
-window/stretch/aspect="expand"
+window/stretch/scale_mode="integer"
 
 [dotnet]
 
@@ -38,72 +37,25 @@ enabled=PackedStringArray("res://addons/limbo_console/plugin.cfg", "res://addons
 
 [gui]
 
-theme/custom_font="uid://bekaaaw7ir8sn"
+theme/custom="uid://8mrx3wk6ygfx"
+theme/custom_font="uid://c0kq24pgvndvg"
 
 [input]
 
 move_left={
 "deadzone": 0.2,
-"events": [Object(InputEventKey,
-"resource_local_to_scene": false,
-"resource_name": "",
-"device": -1,
-"window_id": 0,
-"alt_pressed": false,
-"shift_pressed": false,
-"ctrl_pressed": false,
-"meta_pressed": false,
-"pressed": false,
-"keycode": 0,
-"physical_keycode": 65,
-"key_label": 0,
-"unicode": 97,
-"location": 0,
-"echo": false,
-"script": null
-)]
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":65,"key_label":0,"unicode":97,"location":0,"echo":false,"script":null)
+]
 }
 move_right={
 "deadzone": 0.2,
-"events": [Object(InputEventKey,
-"resource_local_to_scene": false,
-"resource_name": "",
-"device": -1,
-"window_id": 0,
-"alt_pressed": false,
-"shift_pressed": false,
-"ctrl_pressed": false,
-"meta_pressed": false,
-"pressed": false,
-"keycode": 0,
-"physical_keycode": 68,
-"key_label": 0,
-"unicode": 100,
-"location": 0,
-"echo": false,
-"script": null
-)]
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":68,"key_label":0,"unicode":100,"location":0,"echo":false,"script":null)
+]
 }
 jump={
 "deadzone": 0.2,
-"events": [Object(InputEventKey,
-"resource_local_to_scene": false,
-"resource_name": "",
-"device": -1,
-"window_id": 0,
-"alt_pressed": false,
-"shift_pressed": false,
-"ctrl_pressed": false,
-"meta_pressed": false,
-"pressed": false,
-"keycode": 0,
-"physical_keycode": 87,
-"key_label": 0,
-"unicode": 119,
-"location": 0,
-"echo": false,
-"script": null
-)]
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":87,"key_label":0,"unicode":119,"location":0,"echo":false,"script":null)
+]
 }
 spirit={
 "deadzone": 0.2,
@@ -111,66 +63,23 @@ spirit={
 }
 limbo_console_toggle={
 "deadzone": 0.5,
-"events": [Object(InputEventKey,
-"resource_local_to_scene": false,
-"resource_name": "",
-"device": 16,
-"window_id": 0,
-"alt_pressed": false,
-"shift_pressed": false,
-"ctrl_pressed": false,
-"meta_pressed": false,
-"pressed": false,
-"keycode": 96,
-"physical_keycode": 0,
-"key_label": 0,
-"unicode": 0,
-"location": 0,
-"echo": false,
-"script": null
-)]
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":16,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":96,"physical_keycode":0,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
 }
 limbo_auto_complete_reverse={
 "deadzone": 0.5,
-"events": [Object(InputEventKey,
-"resource_local_to_scene": false,
-"resource_name": "",
-"device": 16,
-"window_id": 0,
-"alt_pressed": false,
-"shift_pressed": true,
-"ctrl_pressed": false,
-"meta_pressed": false,
-"pressed": false,
-"keycode": 4194306,
-"physical_keycode": 0,
-"key_label": 0,
-"unicode": 0,
-"location": 0,
-"echo": false,
-"script": null
-)]
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":16,"window_id":0,"alt_pressed":false,"shift_pressed":true,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":4194306,"physical_keycode":0,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
 }
 limbo_console_search_history={
 "deadzone": 0.5,
-"events": [Object(InputEventKey,
-"resource_local_to_scene": false,
-"resource_name": "",
-"device": 16,
-"window_id": 0,
-"alt_pressed": false,
-"shift_pressed": false,
-"ctrl_pressed": true,
-"meta_pressed": false,
-"pressed": false,
-"keycode": 82,
-"physical_keycode": 0,
-"key_label": 0,
-"unicode": 0,
-"location": 0,
-"echo": false,
-"script": null
-)]
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":16,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":true,"meta_pressed":false,"pressed":false,"keycode":82,"physical_keycode":0,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+interact={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":70,"key_label":0,"unicode":102,"location":0,"echo":false,"script":null)
+]
 }
 
 [physics]

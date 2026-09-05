@@ -1,3 +1,11 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
+
+# C#
+bin/
+obj/
+
+# Editor
+.vscode/
+.idea/

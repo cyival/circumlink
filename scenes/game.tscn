@@ -1,92 +1,57 @@
-[gd_scene format=3 uid="uid://dl8xvhjd77t6a"]
+[gd_scene format=3 uid="uid://hy70ax30008c"]
 
-[ext_resource type="PackedScene" uid="uid://bqk1liltv7v12" path="res://prefabs/player.tscn" id="1_u5sy4"]
-[ext_resource type="PackedScene" uid="uid://c2cfkr3u28yl3" path="res://prefabs/player_latency_controller.tscn" id="2_gee14"]
-[ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="3_0tnpc"]
-[ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="4_vtaks"]
-[ext_resource type="Script" uid="uid://ccmiitq0sdh7j" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_noise_emitter_3d.gd" id="5_kvpfn"]
-[ext_resource type="Script" uid="uid://cuffvge5ad4aa" path="res://addons/phantom_camera/scripts/resources/phantom_camera_noise_3d.gd" id="6_dinhu"]
-[ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="7_kvuet"]
-[ext_resource type="PackedScene" uid="uid://cfl4xl6yhwf53" path="res://prefabs/level_controller.tscn" id="9_0tnpc"]
+[ext_resource type="Script" uid="uid://bl2dfiuydu6lu" path="res://scripts/Game.cs" id="1_uwrxv"]
+[ext_resource type="Script" uid="uid://combj5yxpgb5r" path="res://scripts/level/LevelController.cs" id="2_yqjtg"]
+[ext_resource type="PackedScene" uid="uid://bqk1liltv7v12" path="res://prefabs/player.tscn" id="3_lnu2h"]
+[ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="4_gee14"]
+[ext_resource type="Resource" uid="uid://b3hf3yggyoncq" path="res://camera_tween.tres" id="5_kvpfn"]
+[ext_resource type="Script" uid="uid://ccmiitq0sdh7j" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_noise_emitter_3d.gd" id="6_vtaks"]
+[ext_resource type="Script" uid="uid://cuffvge5ad4aa" path="res://addons/phantom_camera/scripts/resources/phantom_camera_noise_3d.gd" id="7_kvpfn"]
+[ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="8_dinhu"]
+[ext_resource type="Script" uid="uid://be8yc5gtv2uw8" path="res://scripts/interface/InterfaceManager.cs" id="9_0tnpc"]
+[ext_resource type="Script" uid="uid://d1dxvtmgwmkl5" path="res://scripts/AudioManager.cs" id="10_vtaks"]
+[ext_resource type="Script" uid="uid://bpbdpspx3iwb4" path="res://scripts/CameraController.cs" id="11_kvpfn"]
+[ext_resource type="Script" uid="uid://bxxqimtka1455" path="res://scripts/LatencyController.cs" id="12_dinhu"]
+[ext_resource type="PackedScene" uid="uid://c2cfkr3u28yl3" path="res://prefabs/player_latency_controller.tscn" id="13_player_latency"]
 
-[sub_resource type="GDScript" id="GDScript_t1mng"]
-script/source = "extends Node3D
-
-func _ready() -> void:
-	ConsoleCommand.noise_emitter = $PhantomCameraNoiseEmitter3D
-"
-
-[sub_resource type="GDScript" id="GDScript_ihpmv"]
-script/source = "extends Label
-
-
-func _ready() -> void:
-	update()
-	
-	var timer = Timer.new()
-	timer.wait_time = 1
-	timer.timeout.connect(update)
-	
-	add_child(timer)
-	timer.start()
-
-func update() -> void:
-	var latency: int = LatencyController.get_latency() * 1000
-	
-	# TODO: Custom color
-	if latency < 200:
-		self_modulate = Color.CHARTREUSE
-	elif latency < 700:
-		self_modulate = Color.GOLD
-	else:
-		self_modulate = Color.RED
-	
-	text = \"%sms\" % (latency + randi_range(0,50))
-"
-
-[sub_resource type="Resource" id="Resource_r0b3m"]
-script = ExtResource("4_vtaks")
-
-[sub_resource type="Resource" id="Resource_es41n"]
-script = ExtResource("6_dinhu")
+[sub_resource type="Resource" id="Resource_trtic"]
+script = ExtResource("7_kvpfn")
 frequency = 1.0
-noise_seed = 552
+noise_seed = 352
 rotational_noise = false
 positional_noise = true
 positional_multiplier_z = 0.0
 metadata/_custom_type_script = "uid://cuffvge5ad4aa"
 
-[sub_resource type="Environment" id="Environment_t1mng"]
+[sub_resource type="Environment" id="Environment_ir15t"]
 glow_enabled = true
 
-[node name="Game" type="Node3D" unique_id=800808023]
-script = SubResource("GDScript_t1mng")
+[node name="Game" type="Node3D" unique_id=135602039 node_paths=PackedStringArray("InterfaceManager", "CameraController", "LatencyController", "AudioManager", "Player")]
+script = ExtResource("1_uwrxv")
+InterfaceManager = NodePath("InterfaceManager")
+CameraController = NodePath("CameraController")
+LatencyController = NodePath("LatencyController")
+AudioManager = NodePath("AudioManager")
+Player = NodePath("Base/Player")
 
-[node name="Player" parent="." unique_id=2060740801 instance=ExtResource("1_u5sy4")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+[node name="LevelController" type="Node" parent="." unique_id=1903721843 node_paths=PackedStringArray("BaseNode")]
+script = ExtResource("2_yqjtg")
+BaseNode = NodePath("../Base")
 
-[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=957775300]
+[node name="Base" type="Node3D" parent="." unique_id=350292806]
 
-[node name="Label" type="Label" parent="CanvasLayer" unique_id=662375250]
-anchors_preset = 10
-anchor_right = 1.0
-offset_bottom = 23.0
-grow_horizontal = 2
-text = "xxxms"
-horizontal_alignment = 1
-script = SubResource("GDScript_ihpmv")
+[node name="PlayerLatencyController" parent="Base" unique_id=1269806519 node_paths=PackedStringArray("Player") instance=ExtResource("13_player_latency")]
+Player = NodePath("../Player")
 
-[node name="PlayerLatencyController" parent="." unique_id=1269806519 node_paths=PackedStringArray("player") instance=ExtResource("2_gee14")]
-player = NodePath("../Player")
-debug_draw_positions = true
+[node name="Player" parent="Base" unique_id=2060740801 instance=ExtResource("3_lnu2h")]
 
-[node name="PhantomCamera3D" type="Node3D" parent="." unique_id=1507746967 node_paths=PackedStringArray("follow_target")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 5)
+[node name="PlayerCamera" type="Node3D" parent="Base" unique_id=1914504870 node_paths=PackedStringArray("follow_target")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5)
 top_level = true
-script = ExtResource("3_0tnpc")
+script = ExtResource("4_gee14")
 follow_mode = 2
 follow_target = NodePath("../Player")
-tween_resource = SubResource("Resource_r0b3m")
+tween_resource = ExtResource("5_kvpfn")
 follow_offset = Vector3(0, 0, 5)
 follow_damping = true
 follow_distance = 5.0
@@ -99,26 +64,52 @@ align_transform_with_view = Callable()
 align_position_with_view = Callable()
 metadata/_custom_type_script = "uid://csjccrhj5wnx7"
 
-[node name="PhantomCameraNoiseEmitter3D" type="Node3D" parent="." unique_id=281760962]
-script = ExtResource("5_kvpfn")
-noise = SubResource("Resource_es41n")
+[node name="PhantomCameraNoiseEmitter3D" type="Node3D" parent="Base" unique_id=1204981213]
+script = ExtResource("6_vtaks")
+noise = SubResource("Resource_trtic")
 growth_time = 0.05
 decay_time = 0.1
 metadata/_custom_type_script = "uid://ccmiitq0sdh7j"
 
-[node name="Camera3D" type="Camera3D" parent="." unique_id=401583783]
+[node name="Camera3D" type="Camera3D" parent="Base" unique_id=363900589]
 physics_interpolation_mode = 1
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 5)
 top_level = true
+current = true
 
-[node name="PhantomCameraHost" type="Node" parent="Camera3D" unique_id=641761549]
+[node name="PhantomCameraHost" type="Node" parent="Base/Camera3D" unique_id=1634966593]
 process_priority = 300
 process_physics_priority = 300
-script = ExtResource("7_kvuet")
+script = ExtResource("8_dinhu")
 metadata/_custom_type_script = "uid://bd046eokvcnu2"
 
-[node name="LevelController" parent="." unique_id=1716193401 node_paths=PackedStringArray("player") instance=ExtResource("9_0tnpc")]
-player = NodePath("../Player")
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Base" unique_id=2077069583]
+environment = SubResource("Environment_ir15t")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1120339418]
-environment = SubResource("Environment_t1mng")
+[node name="SubCamera" type="Node3D" parent="Base" unique_id=127285834 node_paths=PackedStringArray("follow_target")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 5)
+top_level = true
+script = ExtResource("4_gee14")
+follow_mode = 2
+follow_target = NodePath("../Player")
+tween_resource = ExtResource("5_kvpfn")
+follow_offset = Vector3(5, 0, 5)
+align_transform_with_view = Callable()
+align_position_with_view = Callable()
+metadata/_custom_type_script = "uid://csjccrhj5wnx7"
+
+[node name="InterfaceManager" type="Node" parent="." unique_id=583434856]
+script = ExtResource("9_0tnpc")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="InterfaceManager" unique_id=1500673594]
+
+[node name="AudioManager" type="Node" parent="." unique_id=2069056121]
+script = ExtResource("10_vtaks")
+
+[node name="CameraController" type="Node" parent="." unique_id=1656648192]
+script = ExtResource("11_kvpfn")
+_playerCameraPath = NodePath("../Base/PlayerCamera")
+_subCameraPath = NodePath("../Base/SubCamera")
+
+[node name="LatencyController" type="Node" parent="." unique_id=1792235252]
+script = ExtResource("12_dinhu")

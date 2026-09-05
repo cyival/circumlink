@@ -13,7 +13,7 @@ public partial class PlayerController : CharacterBody3D
     [Export]
     public float Acceleration = 12.0f;    // 地面加速度
     [Export]
-    public float AirAcceleration = 4.0f; // 空中加速度
+    public float AirAcceleration = 4.0f;  // 空中加速度
     [Export]
     public float Friction = 10.0f;        // 地面摩擦减速
 

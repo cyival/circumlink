@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dvj3xv3ynyjd5" path="res://scripts/interface/MenuInterface.cs" id="1_xm0pa"]
 [ext_resource type="Shader" uid="uid://des0l465544yk" path="res://shaders/blur.gdshader" id="2_ahbge"]
+[ext_resource type="Script" uid="uid://upd4wvgu0qfu" path="res://scripts/interface/OptionsContainer.cs" id="3_ahbge"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_t1mng"]
 shader = ExtResource("2_ahbge")
@@ -18,7 +19,7 @@ func _ready() -> void:
 	text = text.replace(\"{version}\", ProjectSettings.get_setting(\"application/config/version\"))
 "
 
-[node name="Menu" type="Control" unique_id=1564905118 node_paths=PackedStringArray("ContinueButton", "SettingsButton", "ExitButton", "MenuPanel", "ScreenEffect")]
+[node name="Menu" type="Control" unique_id=1564905118 node_paths=PackedStringArray("ContinueButton", "SettingsButton", "ExitButton", "MenuPanel", "ScreenEffect", "OptionsContainer")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -30,9 +31,10 @@ ContinueButton = NodePath("MarginContainer/HBoxContainer/PanelContainer/VBoxCont
 SettingsButton = NodePath("MarginContainer/HBoxContainer/PanelContainer/VBoxContainer/SettingsButton")
 ExitButton = NodePath("MarginContainer/HBoxContainer/PanelContainer/VBoxContainer/ExitButton")
 MenuPanel = NodePath("MarginContainer/HBoxContainer/PanelContainer")
-ScreenEffect = NodePath("ColorRect")
+ScreenEffect = NodePath("BackgroundEffect")
+OptionsContainer = NodePath("MarginContainer/HBoxContainer/Spacer/OptionsContainer")
 
-[node name="ColorRect" type="ColorRect" parent="." unique_id=2054146491]
+[node name="BackgroundEffect" type="ColorRect" parent="." unique_id=2054146491]
 material = SubResource("ShaderMaterial_t1mng")
 layout_mode = 1
 anchors_preset = 15
@@ -56,11 +58,59 @@ metadata/_edit_use_anchors_ = true
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer" unique_id=194731361]
 layout_mode = 2
+theme_override_constants/separation = 25
 
 [node name="Spacer" type="Control" parent="MarginContainer/HBoxContainer" unique_id=959112099]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 1.2
+
+[node name="OptionsContainer" type="PanelContainer" parent="MarginContainer/HBoxContainer/Spacer" unique_id=742806635 node_paths=PackedStringArray("_resolutionOptionButton")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("3_ahbge")
+_resolutionOptionButton = NodePath("VBoxContainer/ResolOption")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Spacer/OptionsContainer" unique_id=1793140270]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Spacer/OptionsContainer/VBoxContainer" unique_id=673706483]
+layout_mode = 2
+text = "Options"
+
+[node name="Spacer" type="Control" parent="MarginContainer/HBoxContainer/Spacer/OptionsContainer/VBoxContainer" unique_id=229347666]
+layout_mode = 2
+
+[node name="VolLabel" type="Label" parent="MarginContainer/HBoxContainer/Spacer/OptionsContainer/VBoxContainer" unique_id=1313310935]
+layout_mode = 2
+text = "Volume"
+
+[node name="VolSlider" type="HSlider" parent="MarginContainer/HBoxContainer/Spacer/OptionsContainer/VBoxContainer" unique_id=1269765745]
+layout_mode = 2
+step = 5.0
+value = 100.0
+tick_count = 5
+ticks_on_borders = true
+
+[node name="ResolLabel" type="Label" parent="MarginContainer/HBoxContainer/Spacer/OptionsContainer/VBoxContainer" unique_id=451239889]
+layout_mode = 2
+text = "Resolution"
+
+[node name="ResolOption" type="OptionButton" parent="MarginContainer/HBoxContainer/Spacer/OptionsContainer/VBoxContainer" unique_id=1053027688]
+layout_mode = 2
+selected = 0
+item_count = 1
+popup/item_0/text = "1111"
+popup/item_0/id = 0
+
+[node name="CheckButton" type="CheckButton" parent="MarginContainer/HBoxContainer/Spacer/OptionsContainer/VBoxContainer" unique_id=1814352157]
+layout_mode = 2
+text = "Fullscreen"
 
 [node name="PanelContainer" type="PanelContainer" parent="MarginContainer/HBoxContainer" unique_id=364236255]
 layout_mode = 2

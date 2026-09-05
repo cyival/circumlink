@@ -19,10 +19,15 @@ public partial class MenuInterface : Control
     [Export]
     public ColorRect ScreenEffect;
 
+    [Export]
+    public OptionsContainer OptionsContainer;
+
     private CameraController _cameraController => Game.Instance.CameraController;
 
     public override void _Ready()
     {
+        OptionsContainer.Hide();
+
         _cameraController.FocusSubCameraOn(Game.Instance.Player);
         _cameraController.UseSubCamera();
 

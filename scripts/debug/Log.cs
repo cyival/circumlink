@@ -21,15 +21,15 @@ public static class Log
 
     // === Default logging methods ===
 
-    public static void LogTrace(string message) => _defaultLogger.LogTrace(message);
+    public static void LogTrace(string message, params object?[] args) => _defaultLogger.LogTrace(message, args);
 
-    public static void LogDebug(string message) => _defaultLogger.LogDebug(message);
+    public static void LogDebug(string message, params object?[] args) => _defaultLogger.LogDebug(message, args);
 
-    public static void LogInformation(string message) => _defaultLogger.LogInformation(message);
+    public static void LogInformation(string message, params object?[] args) => _defaultLogger.LogInformation(message, args);
 
-    public static void LogWarning(string message) => _defaultLogger.LogWarning(message);
+    public static void LogWarning(string message, params object?[] args) => _defaultLogger.LogWarning(message, args);
 
-    public static void LogError(string message) => _defaultLogger.LogError(message);
+    public static void LogError(string message, params object?[] args) => _defaultLogger.LogError(message, args);
 
-    public static void LogCritical(string message) => _defaultLogger.LogCritical(message);
+    public static void LogCritical(string message, params object?[] args) => _defaultLogger.LogCritical(message, args);
 }

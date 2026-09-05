@@ -37,8 +37,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="2dog.engine" Version="4.7.1.70"/>
-        <PackageReference Include="2dog.browser-wasm" Version="[4.7.1.35]"/>
+        <PackageReference Include="2dog.engine" Version="4.7.2.82"/>
+        <PackageReference Include="2dog.browser-wasm" Version="[4.7.2.3]"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../Circumlink.csproj"/>

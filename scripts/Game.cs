@@ -7,16 +7,24 @@ namespace Circumlink;
 
 public partial class Game : Node
 {
-    public static Game Instance { get; private set; }
+    public static Game Instance { get {
+        if (field is null)
+            Log.LogError("Game instance reached before initialized.");
+        return field;
+    } private set; }
 
     public readonly SaveService SaveService = new(ProjectSettings.GlobalizePath("user://"));
     public readonly EventHub EventHub = new();
+    public readonly SettingsController SettingsController = new();
 
     [Export]
     public InterfaceManager InterfaceManager { get; private set; }
 
     [Export]
     public CameraController CameraController { get; private set; }
+
+    [Export]
+    public LatencyController LatencyController { get; private set; }
 
     [Export]
     public PlayerController Player { get; private set; }
@@ -34,6 +42,7 @@ public partial class Game : Node
     public override void _Ready()
     {
         AddChild(EventHub);
+        AddChild(SettingsController);
 
         // Set window minimum size
         GetTree().Root.MinSize = new Vector2I(1152, 648);
@@ -44,6 +53,8 @@ public partial class Game : Node
 
         var entryUi = ResourceLoader.Load<PackedScene>("res://scenes/entry.tscn").Instantiate<Control>();
         InterfaceManager.Display(entryUi);
+
+        LoadDebugSettings();
 
         EventHub.Publish(new GameReadyEvent());
 
@@ -57,4 +68,12 @@ public partial class Game : Node
 
     public void LoadGame() => Save = SaveService.Load();
     public void SaveGame() => SaveService.Save(Save);
+
+    private void LoadDebugSettings()
+    {
+        var debugSettings = DebugSettings.Load();
+
+        EventHub.EventLogFilter = debugSettings.EventLogFilters;
+        Log.LogDebug("Event log filter: {Filter}", string.Join(", ", debugSettings.EventLogFilters));
+    }
 }

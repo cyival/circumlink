@@ -11,6 +11,7 @@
 [ext_resource type="Script" uid="uid://be8yc5gtv2uw8" path="res://scripts/interface/InterfaceManager.cs" id="9_0tnpc"]
 [ext_resource type="Script" uid="uid://d1dxvtmgwmkl5" path="res://scripts/AudioManager.cs" id="10_vtaks"]
 [ext_resource type="Script" uid="uid://bpbdpspx3iwb4" path="res://scripts/CameraController.cs" id="11_kvpfn"]
+[ext_resource type="Script" uid="uid://bxxqimtka1455" path="res://scripts/LatencyController.cs" id="12_dinhu"]
 
 [sub_resource type="Resource" id="Resource_trtic"]
 script = ExtResource("7_kvpfn")
@@ -103,3 +104,9 @@ script = ExtResource("10_vtaks")
 script = ExtResource("11_kvpfn")
 _playerCameraPath = NodePath("../Base/PlayerCamera")
 _subCameraPath = NodePath("../Base/SubCamera")
+
+[node name="LatencyController" type="Node" parent="." unique_id=1792235252]
+script = ExtResource("12_dinhu")
+MinRecordLatencySecs = 0.2
+RecordIntervalSecs = 0.02
+IsEnabled = true

@@ -10,6 +10,7 @@ namespace Circumlink.Events;
 public partial class EventHub : Node
 {
     public static EventHub Instance { get; private set; }
+    public static string[] EventLogFilter { get; set; } = [];
 
     private readonly Dictionary<Type, List<Delegate>> _subscriptions = [];
     private readonly ILogger<EventHub> _logger = Debug.Log.GetLogger<EventHub>();
@@ -49,7 +50,8 @@ public partial class EventHub : Node
 
     public void Publish<T>(T eventData) where T : IEvent
     {
-        _logger.LogDebug("Publishing event: {Event}", eventData);
+        if (!EventLogFilter.Contains(typeof(T).Name))
+            _logger.LogDebug("Publishing event: {Event}", eventData);
 
         Type eventType = typeof(T);
         if (!_subscriptions.TryGetValue(eventType, out var handlers))

@@ -20,7 +20,7 @@ public partial class PlayerController : CharacterBody3D
     public bool IsEnabled = false;
     public bool IsControlEnabled = true;
 
-    private float _currnetAcceleration = 0.0f;
+    private float _currentAcceleration = 0.0f;
 
 
     public override void _PhysicsProcess(double delta)
@@ -36,14 +36,14 @@ public partial class PlayerController : CharacterBody3D
         var horizontalInput = IsControlEnabled ? Input.GetAxis("move_left", "move_right") : 0;
 
         // Select acceleration based on ground or air state
-        _currnetAcceleration = IsOnFloor() ? Acceleration : AirAcceleration;
+        _currentAcceleration = IsOnFloor() ? Acceleration : AirAcceleration;
 
         // Apply horizontal movement
         if (horizontalInput != 0)
         {
             // Apply acceleration to target velocity
             var targetVelocity = horizontalInput * WalkSpeed;
-            Velocity = Velocity with { X = Mathf.MoveToward(Velocity.X, targetVelocity, _currnetAcceleration) };
+            Velocity = Velocity with { X = Mathf.MoveToward(Velocity.X, targetVelocity, _currentAcceleration * (float)delta) };
         }
         else
         {

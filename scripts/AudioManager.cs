@@ -21,6 +21,9 @@ public partial class AudioManager : Node
     [Export]
     public ushort MaxCachedSfxPlayers { get; set; } = 10;
 
+    private AudioPlayerPool _sfxPool;
+    private AudioStreamPlayer _bgmPlayer;
+
     public override void _Ready()
     {
         _logger.LogInformation("AudioManager ready.");
@@ -42,14 +45,57 @@ public partial class AudioManager : Node
         }
     }
 
+    /// <summary>
+    /// Plays a one-shot SFX through the LRU audio player pool.
+    /// </summary>
     public void PlaySfx(AudioStream stream)
     {
-        _logger.LogInformation("Playing Sfx: {}", stream);
+        if (stream is null)
+        {
+            _logger.LogWarning("PlaySfx called with a null stream.");
+            return;
+        }
+
+        _sfxPool ??= new AudioPlayerPool(this, SfxBusName, MaxCachedSfxPlayers);
+        _sfxPool.MaxPlayers = MaxCachedSfxPlayers;
+        _sfxPool.Play(stream);
     }
 
+    /// <summary>
+    /// Plays a BGM stream on the dedicated BGM bus. Only one BGM plays at a time.
+    /// </summary>
     public void PlayBgm(AudioStream stream)
     {
-        _logger.LogInformation("Playing Bgm: {}", stream);
+        if (stream is null)
+        {
+            StopBgm();
+            return;
+        }
+
+        if (_bgmPlayer is null)
+        {
+            _bgmPlayer = new AudioStreamPlayer
+            {
+                Bus = BgmBusName
+            };
+            AddChild(_bgmPlayer);
+        }
+
+        if (_bgmPlayer.Playing && _bgmPlayer.Stream == stream)
+            return;
+
+        _bgmPlayer.Stream = stream;
+        _bgmPlayer.Play();
+    }
+
+    public void StopBgm()
+    {
+        _bgmPlayer?.Stop();
+    }
+
+    public void StopAllSfx()
+    {
+        _sfxPool?.StopAll();
     }
 
     public enum AudioType

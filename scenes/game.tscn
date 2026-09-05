@@ -26,11 +26,12 @@ metadata/_custom_type_script = "uid://cuffvge5ad4aa"
 [sub_resource type="Environment" id="Environment_ir15t"]
 glow_enabled = true
 
-[node name="Game" type="Node3D" unique_id=135602039 node_paths=PackedStringArray("InterfaceManager", "CameraController", "LatencyController", "Player")]
+[node name="Game" type="Node3D" unique_id=135602039 node_paths=PackedStringArray("InterfaceManager", "CameraController", "LatencyController", "AudioManager", "Player")]
 script = ExtResource("1_uwrxv")
 InterfaceManager = NodePath("InterfaceManager")
 CameraController = NodePath("CameraController")
 LatencyController = NodePath("LatencyController")
+AudioManager = NodePath("AudioManager")
 Player = NodePath("Base/Player")
 
 [node name="LevelController" type="Node" parent="." unique_id=1903721843 node_paths=PackedStringArray("BaseNode")]

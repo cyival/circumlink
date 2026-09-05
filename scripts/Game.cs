@@ -27,6 +27,9 @@ public partial class Game : Node
     public LatencyController LatencyController { get; private set; }
 
     [Export]
+    public AudioManager AudioManager { get; private set; }
+
+    [Export]
     public PlayerController Player { get; private set; }
 
     public SaveData Save = new();

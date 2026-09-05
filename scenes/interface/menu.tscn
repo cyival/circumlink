@@ -65,7 +65,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 1.2
 
-[node name="OptionsContainer" type="PanelContainer" parent="MarginContainer/HBoxContainer/Spacer" unique_id=742806635 node_paths=PackedStringArray("_resolutionOptionButton")]
+[node name="OptionsContainer" type="PanelContainer" parent="MarginContainer/HBoxContainer/Spacer" unique_id=742806635 node_paths=PackedStringArray("_resolutionOptionButton", "_fullscreenCheckButton", "_volumeSlider")]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -74,6 +74,8 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("3_ahbge")
 _resolutionOptionButton = NodePath("VBoxContainer/ResolOption")
+_fullscreenCheckButton = NodePath("VBoxContainer/CheckButton")
+_volumeSlider = NodePath("VBoxContainer/VolSlider")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Spacer/OptionsContainer" unique_id=1793140270]
 layout_mode = 2
@@ -103,10 +105,6 @@ text = "Resolution"
 
 [node name="ResolOption" type="OptionButton" parent="MarginContainer/HBoxContainer/Spacer/OptionsContainer/VBoxContainer" unique_id=1053027688]
 layout_mode = 2
-selected = 0
-item_count = 1
-popup/item_0/text = "1111"
-popup/item_0/id = 0
 
 [node name="CheckButton" type="CheckButton" parent="MarginContainer/HBoxContainer/Spacer/OptionsContainer/VBoxContainer" unique_id=1814352157]
 layout_mode = 2

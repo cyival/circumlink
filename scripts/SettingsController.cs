@@ -31,5 +31,10 @@ public partial class SettingsController : Node
 
         // Apply fullscreen
         GetTree().Root.Mode = _gameSettings.Fullscreen ? Window.ModeEnum.Fullscreen : Window.ModeEnum.Windowed;
+
+        // Apply volume (0..100) to the Master bus
+        var volume = Mathf.Clamp(_gameSettings.Volume, 0f, 100f) / 100f;
+        var masterBusIndex = AudioServer.GetBusIndex("Master");
+        AudioServer.SetBusVolumeDb(masterBusIndex, volume <= 0.0001f ? -80f : Mathf.LinearToDb(volume));
     }
 }

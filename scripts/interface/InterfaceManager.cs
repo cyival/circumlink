@@ -3,12 +3,14 @@ using Microsoft.Extensions.Logging;
 
 namespace Circumlink.Interface;
 
-// TODO: Not sure when to display hud.
 public partial class InterfaceManager : Node
 {
     private ILogger<InterfaceManager> _logger = Debug.Log.GetLogger<InterfaceManager>();
 
-    public Control CurrentDisplay { get; private set; }
+    private Control _currentDisplay;
+    private System.Action _currentDisplayTreeExiting;
+
+    public Control CurrentDisplay => _currentDisplay;
 
     public HudInterface Hud { get; private set; }
 
@@ -20,31 +22,38 @@ public partial class InterfaceManager : Node
 
     public void Display(Control display)
     {
-        CurrentDisplay = display;
-        if (CurrentDisplay is not null)
-        {
-            // FIXME: May have race conditions if Display is called before the lock is acquired.
-            // FIXME: Unlink TreeExiting event when current display switches
-            CurrentDisplay.TreeExiting += () =>
-            {
-                lock (CurrentDisplay)
-                {
-                    _logger.LogDebug("Display {display} is hiding.", CurrentDisplay);
-                    CurrentDisplay = null;
-                    Hud.Show();
-                }
-            };
-
-            _logger.LogDebug("Display {display} is showing.", CurrentDisplay);
-            AddChild(CurrentDisplay);
-
-            CurrentDisplay.Show();
-            Hud.Hide();
-        }
-        else
+        if (display is null)
         {
             _logger.LogWarning("Display is null.");
+            return;
         }
+
+        // Remove any previously active display so switching views doesn't
+        // leave stale TreeExiting handlers behind.
+        if (_currentDisplay is not null && GodotObject.IsInstanceValid(_currentDisplay))
+        {
+            if (_currentDisplayTreeExiting is not null)
+                _currentDisplay.TreeExiting -= _currentDisplayTreeExiting;
+
+            _currentDisplay.Hide();
+            _currentDisplay.QueueFree();
+        }
+
+        _currentDisplay = display;
+        _currentDisplayTreeExiting = () =>
+        {
+            _logger.LogDebug("Display {display} is hiding.", display);
+            _currentDisplay = null;
+            _currentDisplayTreeExiting = null;
+            Hud.Show();
+        };
+
+        display.TreeExiting += _currentDisplayTreeExiting;
+
+        _logger.LogDebug("Display {display} is showing.", display);
+        AddChild(display);
+        display.Show();
+        Hud.Hide();
     }
 
     public void ShowMessage(string message) => Hud.ShowMessage(message);

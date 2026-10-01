@@ -26,4 +26,14 @@
       <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.10" />
       <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="10.0.10" />
     </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="2dog.godotsharp" Version="$(TwoDogVersion)" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="2dog.godotsharp.editor" Version="$(TwoDogVersion)" Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Editor'" />
+    </ItemGroup>
+    <!-- added by the 2dog tool: properties 2dog hosts need that were not already set -->
+    <PropertyGroup>
+        <DefineConstants>$(DefineConstants);TWODOG_WEB_BOOT</DefineConstants>
+    </PropertyGroup>
 </Project>

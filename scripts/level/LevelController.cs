@@ -56,6 +56,6 @@ public partial class LevelController : Node
 
     private void CmdLevel()
     {
-        LimboConsole.Info("Current level: {}", _currentLevelNode?.Name);
+        LimboConsole.Info($"Current level: {_currentLevelNode?.Name}");
     }
 }

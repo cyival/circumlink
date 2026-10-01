@@ -1,6 +1,7 @@
 using Godot;
 using Microsoft.Extensions.Logging;
 using Circumlink.Events;
+using Limbo.Console.Sharp;
 
 namespace Circumlink.Level;
 
@@ -28,6 +29,8 @@ public partial class LevelController : Node
         _levelGenerator = new LevelGenerator(levelRegistry);
         AddChild(_levelGenerator);
 
+        RegisterConsoleCommands();
+
         // Generate the level when the game is ready.
         this.SubscribeEvent<GameReadyEvent>((e) =>
         {
@@ -42,5 +45,17 @@ public partial class LevelController : Node
                 _player.Position = spawnPoint.Position;
             _logger.LogInformation("Sync player position to spawn point: {}", spawnPoint?.Position);
         });
+    }
+
+    /* Console commands */
+
+    private void RegisterConsoleCommands()
+    {
+        LimboConsole.RegisterCommand(new Callable(this, MethodName.CmdLevel), "level");
+    }
+
+    private void CmdLevel()
+    {
+        LimboConsole.Info("Current level: {}", _currentLevelNode?.Name);
     }
 }
